@@ -153,7 +153,8 @@ body {
     border-left: none;
 }
 
-.time-input-group .time-status.has-time {
+.time-input-group .time-status.has-time,
+.agent-time .time-status.has-time {
     background-color: #d4edda;
     color: var(--success-color);
 }

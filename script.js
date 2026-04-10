@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', function() {
         let timeInput;
         let statusElement;
         
-        // Find the parent time-input-group
-        const timeInputGroup = button.closest('.time-input-group');
+        // Find the parent time-input-group or agent-time input-group
+        const timeInputGroup = button.closest('.time-input-group') || button.closest('.agent-time');
         if (timeInputGroup) {
             timeInput = timeInputGroup.querySelector('input[type="time"]');
             statusElement = timeInputGroup.querySelector('.time-status');
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listeners to all time inputs to update status
     document.querySelectorAll('input[type="time"]').forEach(input => {
         input.addEventListener('input', function() {
-            const timeInputGroup = this.closest('.time-input-group');
+            const timeInputGroup = this.closest('.time-input-group') || this.closest('.input-group');
             if (timeInputGroup) {
                 const statusElement = timeInputGroup.querySelector('.time-status');
                 if (statusElement) {
@@ -724,23 +724,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // Reset comments to hidden state
             commentsNoBtn.click();
             
-            // Re-add event listeners
-            document.querySelector('.btn-remove').addEventListener('click', function() {
+            // Re-add event listeners for the newly created agent
+            const newAgentItem = agentsContainer.querySelector('.agent-item');
+            newAgentItem.querySelector('.btn-remove').addEventListener('click', function() {
                 this.closest('.agent-item').remove();
             });
-            
-            document.querySelector('.current-time-btn').addEventListener('click', function() {
+            newAgentItem.querySelector('.current-time-btn').addEventListener('click', function() {
                 handleTimeButtonClick(this);
             });
-            
-            document.querySelector('input[type="time"]').addEventListener('input', function() {
-                const timeInputGroup = this.closest('.time-input-group');
-                if (timeInputGroup) {
-                    const statusElement = timeInputGroup.querySelector('.time-status');
-                    if (statusElement) {
-                        updateTimeStatus(this, statusElement);
-                    }
-                }
+            const resetAgentTimeInput = newAgentItem.querySelector('input[type="time"]');
+            const resetAgentStatusEl = newAgentItem.querySelector('.time-status');
+            resetAgentTimeInput.addEventListener('input', function() {
+                updateTimeStatus(this, resetAgentStatusEl);
             });
         }
     });

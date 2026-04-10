@@ -534,6 +534,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const delayCodesSwitch = document.getElementById('delayCodesSwitch');
     const delayCodesContent = document.getElementById('delayCodesContent');
     const delayCodeSelect = document.getElementById('delayCodeSelect');
+    const delayCodeNumberSelect = document.getElementById('delayCodeNumberSelect');
     const delayCodesContainer = document.getElementById('delayCodesContainer');
     let delayCodeItemCounter = 0;
 
@@ -561,6 +562,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear all delay code data when hiding
         delayCodesContainer.innerHTML = '';
         delayCodeSelect.value = '';
+        delayCodeNumberSelect.value = '';
+    });
+
+    delayCodeNumberSelect.addEventListener('change', function() {
+        delayCodeSelect.value = this.value;
+    });
+
+    delayCodeSelect.addEventListener('change', function() {
+        delayCodeNumberSelect.value = this.value;
     });
 
     document.getElementById('addDelayCodeBtn').addEventListener('click', function() {
@@ -606,6 +616,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         delayCodeSelect.value = '';
+        delayCodeNumberSelect.value = '';
         delayItem.querySelector('.delay-code-minutes').focus();
     });
     

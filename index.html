@@ -349,18 +349,36 @@
                             </h4>
                             <div class="delay-codes-content hidden" id="delayCodesContent">
                                 <div class="delay-code-dropdown-container">
-                                    <label for="delayCodeSelect" class="form-label">Choose Delay Code</label>
-                                    <select class="form-select" id="delayCodeSelect">
-                                        <option value="" selected disabled>Select a delay code...</option>
-                                        <option value="11">11 - Aircraft damage/inspection</option>
-                                        <option value="31">31 - Passenger handling delay</option>
-                                        <option value="32">32 - Baggage handling delay</option>
-                                        <option value="33">33 - Cargo/mail delay</option>
-                                        <option value="41">41 - Ramp handling delay</option>
-                                        <option value="51">51 - Fueling delay</option>
-                                        <option value="71">71 - Weather at departure</option>
-                                        <option value="83">83 - Air traffic flow restrictions</option>
-                                    </select>
+                                    <div class="row g-2">
+                                        <div class="col-md-8">
+                                            <label for="delayCodeSelect" class="form-label">Choose Delay Code</label>
+                                            <select class="form-select" id="delayCodeSelect">
+                                                <option value="" selected disabled>Select a delay code...</option>
+                                                <option value="11">11 - Aircraft damage/inspection</option>
+                                                <option value="31">31 - Passenger handling delay</option>
+                                                <option value="32">32 - Baggage handling delay</option>
+                                                <option value="33">33 - Cargo/mail delay</option>
+                                                <option value="41">41 - Ramp handling delay</option>
+                                                <option value="51">51 - Fueling delay</option>
+                                                <option value="71">71 - Weather at departure</option>
+                                                <option value="83">83 - Air traffic flow restrictions</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label for="delayCodeNumberSelect" class="form-label">Choose Delay Code Number</label>
+                                            <select class="form-select" id="delayCodeNumberSelect">
+                                                <option value="" selected disabled>Select number...</option>
+                                                <option value="11">11</option>
+                                                <option value="31">31</option>
+                                                <option value="32">32</option>
+                                                <option value="33">33</option>
+                                                <option value="41">41</option>
+                                                <option value="51">51</option>
+                                                <option value="71">71</option>
+                                                <option value="83">83</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                     <button type="button" class="btn add-delay-code-btn mt-2" id="addDelayCodeBtn">
                                         <i class="bi bi-plus-circle"></i> Add Code
                                     </button>

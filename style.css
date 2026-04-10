@@ -159,6 +159,10 @@ body {
     flex: 2;
 }
 
+.agent-item .btn-remove {
+    font-size: 16px;
+}
+
 .add-agent-btn, .add-bus-btn {
     background-color: var(--norwegian-light-blue);
     color: white;
@@ -182,6 +186,19 @@ body {
 .time-input-group input[type="time"] {
     width: 100%;
     padding-right: 90px;
+}
+
+/* Hide native time picker controls so only custom buttons are used */
+.time-input-group input[type="time"]::-webkit-calendar-picker-indicator,
+.time-input-group input[type="time"]::-webkit-clear-button,
+.time-input-group input[type="time"]::-webkit-inner-spin-button {
+    display: none;
+    -webkit-appearance: none;
+}
+
+.time-input-group input[type="time"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
 }
 
 .time-input-group .form-label {

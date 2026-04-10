@@ -1,0 +1,440 @@
+:root {
+    --norwegian-red: #D81939;
+    --norwegian-dark-blue: #00205B;
+    --norwegian-light-blue: #00A0E3;
+    --light-gray: #f8f9fa;
+    --border-color: #dee2e6;
+    --text-muted: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+}
+
+.logo {
+    height: 40px;
+}
+
+.form-container {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.form-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.section-title {
+    color: var(--norwegian-dark-blue);
+    margin-bottom: 20px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-title-text {
+    display: flex;
+    align-items: center;
+}
+
+.section-title i {
+    margin-right: 10px;
+    color: var(--norwegian-red);
+}
+
+.services-toggle, .bus-gate-toggle, .comments-toggle {
+    display: flex;
+}
+
+.btn-yes, .btn-no {
+    padding: 5px 15px;
+    font-size: 14px;
+    border-radius: 20px;
+}
+
+.btn-yes.active, .btn-no.active {
+    color: white;
+}
+
+.btn-yes.active {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.btn-no.active {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+
+.services-content, .bus-gate-content, .comments-content {
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.services-content.hidden, .bus-gate-content.hidden, .comments-content.hidden {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.services-content.visible, .bus-gate-content.visible, .comments-content.visible {
+    max-height: 1000px;
+    opacity: 1;
+    margin-top: 15px;
+    padding-top: 15px;
+}
+
+.agent-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: flex-end;
+}
+
+.agent-name {
+    flex: 2;
+}
+
+.agent-time {
+    flex: 2;
+}
+
+.add-agent-btn, .add-bus-btn {
+    background-color: var(--norwegian-light-blue);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.add-agent-btn:hover, .add-bus-btn:hover {
+    background-color: #0085c3;
+    transform: translateY(-2px);
+}
+
+.time-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.time-input-group input[type="time"] {
+    padding-right: 100px;
+}
+
+.time-input-group .time-status {
+    position: absolute;
+    right: 45px;
+    background-color: #e9ecef;
+    padding: 6px 10px;
+    border-radius: 0 4px 4px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    border: 1px solid #ced4da;
+    border-left: none;
+}
+
+.time-input-group .time-status.has-time {
+    background-color: #d4edda;
+    color: var(--success-color);
+}
+
+.time-input-group .current-time-btn {
+    position: absolute;
+    right: 0;
+    border-radius: 0 4px 4px 0;
+    z-index: 10;
+}
+
+.passenger-count {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.passenger-count input {
+    flex: 1;
+}
+
+.passenger-count span {
+    font-weight: 600;
+    color: var(--norwegian-dark-blue);
+}
+
+.service-dropdown-container {
+    margin-bottom: 20px;
+}
+
+.add-service-btn {
+    background-color: var(--norwegian-light-blue);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.add-service-btn:hover {
+    background-color: #0085c3;
+    transform: translateY(-2px);
+}
+
+.service-item {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: var(--light-gray);
+    transition: all 0.2s ease;
+}
+
+.service-item:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.service-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.service-title {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: var(--norwegian-dark-blue);
+}
+
+.service-title i {
+    margin-right: 8px;
+    color: var(--norwegian-red);
+}
+
+.service-description {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 15px;
+}
+
+.service-controls {
+    display: flex;
+    gap: 20px;
+}
+
+.service-count-group {
+    width: 120px;
+}
+
+.service-seats-group {
+    flex: 1;
+}
+
+.service-seats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.seat-input {
+    width: 100px;
+}
+
+.bus-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background-color: var(--light-gray);
+}
+
+.bus-number {
+    width: 60px;
+    font-weight: 600;
+    color: var(--norwegian-dark-blue);
+    text-align: center;
+    padding: 8px;
+    background-color: white;
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+}
+
+.bus-times {
+    flex: 1;
+    display: flex;
+    gap: 20px;
+}
+
+.bus-time-group {
+    flex: 1;
+}
+
+.bus-time-group label {
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.bus-time-group .time-input-group {
+    position: relative;
+}
+
+.bus-time-group .time-input-group input[type="time"] {
+    width: 100%;
+    padding-right: 100px;
+}
+
+.bus-time-group .time-input-group .time-status {
+    position: absolute;
+    right: 45px;
+    background-color: #e9ecef;
+    padding: 6px 10px;
+    border-radius: 0 4px 4px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-muted);
+    border: 1px solid #ced4da;
+    border-left: none;
+}
+
+.bus-time-group .time-input-group .time-status.has-time {
+    background-color: #d4edda;
+    color: var(--success-color);
+}
+
+.bus-time-group .time-input-group .bus-time-btn {
+    position: absolute;
+    right: 0;
+    border-radius: 0 4px 4px 0;
+    z-index: 10;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .agent-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .service-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .bus-times {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .bus-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .bus-number {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .section-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+/* Animation for new items */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.agent-item, .service-item, .bus-item {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Custom styling for form elements */
+.form-control:focus {
+    border-color: var(--norwegian-light-blue);
+    box-shadow: 0 0 0 0.2rem rgba(0, 160, 227, 0.25);
+}
+
+.btn-primary {
+    background-color: var(--norwegian-red);
+    border-color: var(--norwegian-red);
+}
+
+.btn-primary:hover {
+    background-color: #b81430;
+    border-color: #b81430;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+}
+
+/* Alert styling */
+.alert {
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+/* Invalid input styling */
+.is-invalid {
+    border-color: var(--danger-color);
+}
+
+/* Border warning for duplicate services */
+.border-warning {
+    border-color: #ffc107 !important;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25) !important;
+}

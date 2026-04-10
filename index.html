@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Norwegian Air Boarding Control Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <header class="d-flex justify-content-between align-items-center py-3 border-bottom">
+                    <div class="d-flex align-items-center">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Norwegian_Air_Shuttle_logo.svg/2560px-Norwegian_Air_Shuttle_logo.svg.png" alt="Norwegian Air Logo" class="logo me-3">
+                        <div>
+                            <h1 class="h4 mb-0">Boarding Control Form</h1>
+                            <p class="mb-0 text-muted">Flight Information & Personnel</p>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <p class="mb-0 fw-bold" id="dateTime"></p>
+                        <p class="mb-0 text-muted">Station: OSL</p>
+                    </div>
+                </header>
+                
+                <div class="form-container p-4">
+                    <form id="boardingControlForm">
+                        <!-- Flight Information Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">
+                                <i class="bi bi-airplane-fill"></i> Flight Information
+                            </h4>
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label for="flightNumber" class="form-label">Flight Number</label>
+                                    <input type="text" class="form-control" id="flightNumber" placeholder="e.g., DY1234" required>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="destination" class="form-label">Destination</label>
+                                    <input type="text" class="form-control" id="destination" placeholder="e.g., London" required>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="gate" class="form-label">Gate</label>
+                                    <input type="text" class="form-control" id="gate" placeholder="e.g., A12" required>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label for="date" class="form-label">Date</label>
+                                    <input type="date" class="form-control" id="date" required>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="aircraft" class="form-label">Aircraft</label>
+                                    <input type="text" class="form-control" id="aircraft" placeholder="e.g., Boeing 737-800">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Scheduled / Actual Times</label>
+                                    <div class="row g-2">
+                                        <div class="col-6">
+                                            <div class="input-group">
+                                                <span class="input-group-text">STA</span>
+                                                <input type="time" class="form-control" id="sta">
+                                                <span class="input-group-text time-status">TL</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="input-group">
+                                                <span class="input-group-text">STD</span>
+                                                <input type="time" class="form-control" id="std">
+                                                <span class="input-group-text time-status">TL</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="input-group">
+                                                <span class="input-group-text">ATA</span>
+                                                <input type="time" class="form-control" id="ata">
+                                                <span class="input-group-text time-status">TL</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="input-group">
+                                                <span class="input-group-text">ATD</span>
+                                                <input type="time" class="form-control" id="atd">
+                                                <span class="input-group-text time-status">TL</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Agents Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">
+                                <i class="bi bi-people-fill"></i> Agents
+                            </h4>
+                            <div id="agentsContainer">
+                                <div class="agent-item">
+                                    <input type="text" class="form-control agent-name" placeholder="Agent name" required>
+                                    <div class="input-group agent-time">
+                                        <input type="time" class="form-control" placeholder="Arrived time">
+                                        <span class="input-group-text time-status">TL</span>
+                                        <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
+                                            <i class="bi bi-clock"></i>
+                                        </button>
+                                    </div>
+                                    <button type="button" class="btn btn-outline-danger btn-sm btn-remove">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn add-agent-btn" id="addAgentBtn">
+                                <i class="bi bi-plus-circle"></i> Add Agent
+                            </button>
+                        </div>
+                        
+                        <!-- Times Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">
+                                <i class="bi bi-clock-fill"></i> Times
+                            </h4>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="time-input-group">
+                                        <label for="boardingStart" class="form-label">Boarding Start</label>
+                                        <input type="time" class="form-control" id="boardingStart">
+                                        <span class="time-status">TL</span>
+                                        <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
+                                            <i class="bi bi-clock"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="time-input-group">
+                                        <label for="boardingClose" class="form-label">Boarding Close</label>
+                                        <input type="time" class="form-control" id="boardingClose">
+                                        <span class="time-status">TL</span>
+                                        <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
+                                            <i class="bi bi-clock"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="time-input-group">
+                                        <label for="gateOpen" class="form-label">Gate Open</label>
+                                        <input type="time" class="form-control" id="gateOpen">
+                                        <span class="time-status">TL</span>
+                                        <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
+                                            <i class="bi bi-clock"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="time-input-group">
+                                        <label for="gateClose" class="form-label">Gate Close</label>
+                                        <input type="time" class="form-control" id="gateClose">
+                                        <span class="time-status">TL</span>
+                                        <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
+                                            <i class="bi bi-clock"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="time-input-group">
+                                        <label for="lastCall" class="form-label">Last Call</label>
+                                        <input type="time" class="form-control" id="lastCall">
+                                        <span class="time-status">TL</span>
+                                        <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
+                                            <i class="bi bi-clock"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="time-input-group">
+                                        <label for="doorsClosed" class="form-label">Doors Closed</label>
+                                        <input type="time" class="form-control" id="doorsClosed">
+                                        <span class="time-status">TL</span>
+                                        <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
+                                            <i class="bi bi-clock"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Bags Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">
+                                <i class="bi bi-bag-fill"></i> Bags
+                            </h4>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="totalBags" class="form-label">Total Bags</label>
+                                    <input type="number" class="form-control" id="totalBags" min="0">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="offloadBagsRequest" class="form-label">Offload Bags Request</label>
+                                    <input type="number" class="form-control" id="offloadBagsRequest" min="0">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="gateBagsCharged" class="form-label">Gate Bags Charged</label>
+                                    <input type="number" class="form-control" id="gateBagsCharged" min="0">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="totalChargedAmount" class="form-label">Total Charged Amount (NOK)</label>
+                                    <input type="number" class="form-control" id="totalChargedAmount" min="0" step="0.01">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="gateBagsTagged" class="form-label">Gate Bags Tagged</label>
+                                    <input type="number" class="form-control" id="gateBagsTagged" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pax Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">
+                                <i class="bi bi-people-fill"></i> Pax (Passengers)
+                            </h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label">Pax Accepted</label>
+                                    <div class="passenger-count">
+                                        <input type="number" class="form-control" id="paxAcceptedAdult" placeholder="Adults" min="0">
+                                        <span>+</span>
+                                        <input type="number" class="form-control" id="paxAcceptedInfant" placeholder="Infants" min="0">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Pax Boarded</label>
+                                    <div class="passenger-count">
+                                        <input type="number" class="form-control" id="paxBoardedAdult" placeholder="Adults" min="0">
+                                        <span>+</span>
+                                        <input type="number" class="form-control" id="paxBoardedInfant" placeholder="Infants" min="0">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="paxOffloaded" class="form-label">Pax Offloaded</label>
+                                    <input type="number" class="form-control" id="paxOffloaded" min="0">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="noShow" class="form-label">No Show</label>
+                                    <input type="number" class="form-control" id="noShow" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Special Services Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">
+                                <div class="section-title-text">
+                                    <i class="bi bi-wheelchair"></i> Special Services
+                                </div>
+                                <div class="services-toggle">
+                                    <button type="button" class="btn btn-outline-success btn-yes" id="servicesYesBtn">Yes</button>
+                                    <button type="button" class="btn btn-outline-danger btn-no active" id="servicesNoBtn">No</button>
+                                </div>
+                            </h4>
+                            <div class="services-content hidden" id="servicesContent">
+                                <div class="service-dropdown-container">
+                                    <label for="serviceSelect" class="form-label">Select Service</label>
+                                    <select class="form-select" id="serviceSelect">
+                                        <option value="" selected disabled>Choose a service...</option>
+                                        <option value="WCHR">WCHR - Wheelchair (Ramp)</option>
+                                        <option value="WCHS">WCHS - Wheelchair (Steps)</option>
+                                        <option value="WCHC">WCHC - Wheelchair (Cabin)</option>
+                                        <option value="UM">UM - Unaccompanied Minor</option>
+                                        <option value="PETS">PETS - Pets in Cabin</option>
+                                        <option value="AVIH">AVIH - Live Animals in Hold</option>
+                                        <option value="PRM">PRM - Passenger with Reduced Mobility</option>
+                                    </select>
+                                    <button type="button" class="btn add-service-btn mt-2" id="addServiceBtn">
+                                        <i class="bi bi-plus-circle"></i> Add Service
+                                    </button>
+                                </div>
+                                
+                                <div id="specialServicesContainer">
+                                    <!-- Services will be added here dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Bus Gate Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">
+                                <div class="section-title-text">
+                                    <i class="bi bi-bus-front-fill"></i> Bus Gate
+                                </div>
+                                <div class="bus-gate-toggle">
+                                    <button type="button" class="btn btn-outline-success btn-yes" id="busGateYesBtn">Yes</button>
+                                    <button type="button" class="btn btn-outline-danger btn-no active" id="busGateNoBtn">No</button>
+                                </div>
+                            </h4>
+                            <div class="bus-gate-content hidden" id="busGateContent">
+                                <div id="busesContainer">
+                                    <div class="bus-item">
+                                        <div class="bus-number">Bus 1</div>
+                                        <div class="bus-times">
+                                            <div class="bus-time-group">
+                                                <label class="form-label">Arrived Time</label>
+                                                <div class="time-input-group">
+                                                    <input type="time" class="form-control bus-arrived-time">
+                                                    <span class="time-status">TL</span>
+                                                    <button type="button" class="btn btn-outline-secondary current-time-btn bus-time-btn" title="Set current time">
+                                                        <i class="bi bi-clock"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <div class="bus-time-group">
+                                                <label class="form-label">Departed Time</label>
+                                                <div class="time-input-group">
+                                                    <input type="time" class="form-control bus-departed-time">
+                                                    <span class="time-status">TL</span>
+                                                    <button type="button" class="btn btn-outline-secondary current-time-btn bus-time-btn" title="Set current time">
+                                                        <i class="bi bi-clock"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-danger btn-sm btn-remove" style="visibility: hidden;">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn add-bus-btn" id="addBusBtn">
+                                    <i class="bi bi-plus-circle"></i> Add Bus
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Comments Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">
+                                <div class="section-title-text">
+                                    <i class="bi bi-chat-square-text-fill"></i> Comments / Special Events
+                                </div>
+                                <div class="comments-toggle">
+                                    <button type="button" class="btn btn-outline-success btn-yes" id="commentsYesBtn">Yes</button>
+                                    <button type="button" class="btn btn-outline-danger btn-no active" id="commentsNoBtn">No</button>
+                                </div>
+                            </h4>
+                            <div class="comments-content hidden" id="commentsContent">
+                                <div class="mb-3">
+                                    <textarea class="form-control" id="comments" rows="4" placeholder="Enter any special events or comments..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="button" class="btn btn-secondary me-md-2" id="resetBtn">Reset</button>
+                            <button type="submit" class="btn btn-primary">Submit Form</button>
+                        </div>
+                    </form>
+                    
+                    <div class="footer">
+                        <p>Norwegian Air Boarding Control Form - Digital Version</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

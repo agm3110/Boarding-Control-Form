@@ -12,9 +12,8 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <header class="d-flex justify-content-between align-items-center py-3 border-bottom">
+                <header class="page-header d-flex justify-content-between align-items-center py-3 border-bottom">
                     <div class="d-flex align-items-center">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Norwegian_Air_Shuttle_logo.svg/2560px-Norwegian_Air_Shuttle_logo.svg.png" alt="Norwegian Air Logo" class="logo me-3">
                         <div>
                             <h1 class="h4 mb-0">Boarding Control Form</h1>
                             <p class="mb-0 text-muted">Flight Information & Personnel</p>
@@ -30,8 +29,8 @@
                     <form id="boardingControlForm">
                         <!-- Flight Information Section -->
                         <div class="form-section">
-                            <h4 class="section-title">
-                                <i class="bi bi-airplane-fill"></i> Flight Information
+                            <h4 class="section-title section-title-simple">
+                                <span class="section-title-text"><i class="bi bi-airplane-fill"></i> Flight Information</span>
                             </h4>
                             <div class="row">
                                 <div class="col-md-3 mb-3">
@@ -51,42 +50,52 @@
                                     <input type="date" class="form-control" id="date" required>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="aircraft" class="form-label">Aircraft</label>
-                                    <input type="text" class="form-control" id="aircraft" placeholder="e.g., Boeing 737-800">
+                        </div>
+
+                        <!-- Scheduled / Actual Times Section -->
+                        <div class="form-section">
+                            <h4 class="section-title section-title-simple">
+                                <span class="section-title-text"><i class="bi bi-clock-history"></i> Scheduled / Actual Times</span>
+                            </h4>
+                            <div class="row g-2">
+                                <div class="col-6 col-md-3">
+                                    <div class="time-input-group">
+                                        <label for="sta" class="form-label">STA</label>
+                                        <input type="time" class="form-control" id="sta">
+                                        <span class="time-status">TL</span>
+                                        <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
+                                            <i class="bi bi-clock"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Scheduled / Actual Times</label>
-                                    <div class="row g-2">
-                                        <div class="col-6">
-                                            <div class="input-group">
-                                                <span class="input-group-text">STA</span>
-                                                <input type="time" class="form-control" id="sta">
-                                                <span class="input-group-text time-status">TL</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="input-group">
-                                                <span class="input-group-text">STD</span>
-                                                <input type="time" class="form-control" id="std">
-                                                <span class="input-group-text time-status">TL</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="input-group">
-                                                <span class="input-group-text">ATA</span>
-                                                <input type="time" class="form-control" id="ata">
-                                                <span class="input-group-text time-status">TL</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="input-group">
-                                                <span class="input-group-text">ATD</span>
-                                                <input type="time" class="form-control" id="atd">
-                                                <span class="input-group-text time-status">TL</span>
-                                            </div>
-                                        </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="time-input-group">
+                                        <label for="std" class="form-label">STD</label>
+                                        <input type="time" class="form-control" id="std">
+                                        <span class="time-status">TL</span>
+                                        <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
+                                            <i class="bi bi-clock"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="time-input-group">
+                                        <label for="ata" class="form-label">ATA</label>
+                                        <input type="time" class="form-control" id="ata">
+                                        <span class="time-status">TL</span>
+                                        <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
+                                            <i class="bi bi-clock"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="time-input-group">
+                                        <label for="atd" class="form-label">ATD</label>
+                                        <input type="time" class="form-control" id="atd">
+                                        <span class="time-status">TL</span>
+                                        <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
+                                            <i class="bi bi-clock"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -94,15 +103,15 @@
                         
                         <!-- Agents Section -->
                         <div class="form-section">
-                            <h4 class="section-title">
-                                <i class="bi bi-people-fill"></i> Agents
+                            <h4 class="section-title section-title-simple">
+                                <span class="section-title-text"><i class="bi bi-people-fill"></i> Agents</span>
                             </h4>
                             <div id="agentsContainer">
                                 <div class="agent-item">
                                     <input type="text" class="form-control agent-name" placeholder="Agent name" required>
-                                    <div class="input-group agent-time">
+                                    <div class="time-input-group agent-time">
                                         <input type="time" class="form-control" placeholder="Arrived time">
-                                        <span class="input-group-text time-status">TL</span>
+                                        <span class="time-status">TL</span>
                                         <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                                             <i class="bi bi-clock"></i>
                                         </button>
@@ -119,8 +128,8 @@
                         
                         <!-- Times Section -->
                         <div class="form-section">
-                            <h4 class="section-title">
-                                <i class="bi bi-clock-fill"></i> Times
+                            <h4 class="section-title section-title-simple">
+                                <span class="section-title-text"><i class="bi bi-clock-fill"></i> Times</span>
                             </h4>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -188,8 +197,8 @@
                         
                         <!-- Bags Section -->
                         <div class="form-section">
-                            <h4 class="section-title">
-                                <i class="bi bi-bag-fill"></i> Bags
+                            <h4 class="section-title section-title-simple">
+                                <span class="section-title-text"><i class="bi bi-bag-fill"></i> Bags</span>
                             </h4>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -205,7 +214,7 @@
                                     <input type="number" class="form-control" id="gateBagsCharged" min="0">
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label for="totalChargedAmount" class="form-label">Total Charged Amount (NOK)</label>
+                                    <label for="totalChargedAmount" class="form-label">Total Charged Amount (DKK)</label>
                                     <input type="number" class="form-control" id="totalChargedAmount" min="0" step="0.01">
                                 </div>
                                 <div class="col-md-4 mb-3">
@@ -217,8 +226,8 @@
                         
                         <!-- Pax Section -->
                         <div class="form-section">
-                            <h4 class="section-title">
-                                <i class="bi bi-people-fill"></i> Pax (Passengers)
+                            <h4 class="section-title section-title-simple">
+                                <span class="section-title-text"><i class="bi bi-people-fill"></i> Pax (Passengers)</span>
                             </h4>
                             <div class="row">
                                 <div class="col-md-6">
@@ -254,11 +263,11 @@
                         <div class="form-section">
                             <h4 class="section-title">
                                 <div class="section-title-text">
-                                    <i class="bi bi-wheelchair"></i> Special Services
+                                    <i class="bi bi-wheelchair text-danger"></i> Special Services
                                 </div>
-                                <div class="services-toggle">
-                                    <button type="button" class="btn btn-outline-success btn-yes" id="servicesYesBtn">Yes</button>
-                                    <button type="button" class="btn btn-outline-danger btn-no active" id="servicesNoBtn">No</button>
+                                <div class="form-check form-switch services-toggle switch-toggle">
+                                    <input class="form-check-input section-switch-input" type="checkbox" id="servicesSwitch">
+                                    <label class="form-check-label visually-hidden" for="servicesSwitch">Special Services toggle</label>
                                 </div>
                             </h4>
                             <div class="services-content hidden" id="servicesContent">
@@ -291,9 +300,9 @@
                                 <div class="section-title-text">
                                     <i class="bi bi-bus-front-fill"></i> Bus Gate
                                 </div>
-                                <div class="bus-gate-toggle">
-                                    <button type="button" class="btn btn-outline-success btn-yes" id="busGateYesBtn">Yes</button>
-                                    <button type="button" class="btn btn-outline-danger btn-no active" id="busGateNoBtn">No</button>
+                                <div class="form-check form-switch bus-gate-toggle switch-toggle">
+                                    <input class="form-check-input section-switch-input" type="checkbox" id="busGateSwitch">
+                                    <label class="form-check-label visually-hidden" for="busGateSwitch">Bus Gate toggle</label>
                                 </div>
                             </h4>
                             <div class="bus-gate-content hidden" id="busGateContent">
@@ -306,9 +315,6 @@
                                                 <div class="time-input-group">
                                                     <input type="time" class="form-control bus-arrived-time">
                                                     <span class="time-status">TL</span>
-                                                    <button type="button" class="btn btn-outline-secondary current-time-btn bus-time-btn" title="Set current time">
-                                                        <i class="bi bi-clock"></i>
-                                                    </button>
                                                 </div>
                                             </div>
                                             <div class="bus-time-group">
@@ -316,9 +322,6 @@
                                                 <div class="time-input-group">
                                                     <input type="time" class="form-control bus-departed-time">
                                                     <span class="time-status">TL</span>
-                                                    <button type="button" class="btn btn-outline-secondary current-time-btn bus-time-btn" title="Set current time">
-                                                        <i class="bi bi-clock"></i>
-                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -339,9 +342,9 @@
                                 <div class="section-title-text">
                                     <i class="bi bi-chat-square-text-fill"></i> Comments / Special Events
                                 </div>
-                                <div class="comments-toggle">
-                                    <button type="button" class="btn btn-outline-success btn-yes" id="commentsYesBtn">Yes</button>
-                                    <button type="button" class="btn btn-outline-danger btn-no active" id="commentsNoBtn">No</button>
+                                <div class="form-check form-switch comments-toggle switch-toggle">
+                                    <input class="form-check-input section-switch-input" type="checkbox" id="commentsSwitch">
+                                    <label class="form-check-label visually-hidden" for="commentsSwitch">Comments toggle</label>
                                 </div>
                             </h4>
                             <div class="comments-content hidden" id="commentsContent">

@@ -98,9 +98,9 @@ document.addEventListener('DOMContentLoaded', function() {
         agentItem.className = 'agent-item';
         agentItem.innerHTML = `
             <input type="text" class="form-control agent-name" placeholder="Agent name" required>
-            <div class="input-group agent-time">
+            <div class="time-input-group agent-time">
                 <input type="time" class="form-control" placeholder="Arrived time">
-                <span class="input-group-text time-status">TL</span>
+                <span class="time-status">TL</span>
                 <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                     <i class="bi bi-clock"></i>
                 </button>
@@ -141,23 +141,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Special Services toggle functionality
-    const servicesYesBtn = document.getElementById('servicesYesBtn');
-    const servicesNoBtn = document.getElementById('servicesNoBtn');
+    const servicesSwitch = document.getElementById('servicesSwitch');
     const servicesContent = document.getElementById('servicesContent');
-    
-    servicesYesBtn.addEventListener('click', function() {
-        servicesYesBtn.classList.add('active');
-        servicesNoBtn.classList.remove('active');
+
+    servicesSwitch.addEventListener('change', function() {
+        if (this.checked) {
+            servicesContent.classList.remove('hidden');
+            servicesContent.classList.add('visible');
+            return;
+        }
+
         servicesContent.classList.remove('hidden');
-        servicesContent.classList.add('visible');
-    });
-    
-    servicesNoBtn.addEventListener('click', function() {
-        servicesNoBtn.classList.add('active');
-        servicesYesBtn.classList.remove('active');
         servicesContent.classList.remove('visible');
         servicesContent.classList.add('hidden');
-        
+
         // Clear all service data when hiding
         document.getElementById('specialServicesContainer').innerHTML = '';
         document.getElementById('serviceSelect').value = '';
@@ -298,34 +295,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Bus Gate toggle functionality
-    const busGateYesBtn = document.getElementById('busGateYesBtn');
-    const busGateNoBtn = document.getElementById('busGateNoBtn');
+    const busGateSwitch = document.getElementById('busGateSwitch');
     const busGateContent = document.getElementById('busGateContent');
-    
-    busGateYesBtn.addEventListener('click', function() {
-        busGateYesBtn.classList.add('active');
-        busGateNoBtn.classList.remove('active');
-        busGateContent.classList.remove('hidden');
-        busGateContent.classList.add('visible');
-    });
-    
-    busGateNoBtn.addEventListener('click', function() {
-        busGateNoBtn.classList.add('active');
-        busGateYesBtn.classList.remove('active');
+
+    busGateSwitch.addEventListener('change', function() {
+        if (this.checked) {
+            busGateContent.classList.remove('hidden');
+            busGateContent.classList.add('visible');
+            return;
+        }
+
         busGateContent.classList.remove('visible');
         busGateContent.classList.add('hidden');
-        
+
         // Clear all bus data when hiding
         document.querySelectorAll('.bus-arrived-time, .bus-departed-time').forEach(input => {
             input.value = '';
         });
-        
+
         // Reset all status elements
         document.querySelectorAll('#busGateContent .time-status').forEach(status => {
             status.textContent = 'TL';
             status.classList.remove('has-time');
         });
-        
+
         // Reset to just one bus
         const busesContainer = document.getElementById('busesContainer');
         busesContainer.innerHTML = `
@@ -517,26 +510,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Comments toggle functionality
-    const commentsYesBtn = document.getElementById('commentsYesBtn');
-    const commentsNoBtn = document.getElementById('commentsNoBtn');
+    const commentsSwitch = document.getElementById('commentsSwitch');
     const commentsContent = document.getElementById('commentsContent');
-    
-    commentsYesBtn.addEventListener('click', function() {
-        commentsYesBtn.classList.add('active');
-        commentsNoBtn.classList.remove('active');
+
+    commentsSwitch.addEventListener('change', function() {
+        if (this.checked) {
+            commentsContent.classList.remove('hidden');
+            commentsContent.classList.add('visible');
+
+            // Focus on the comments textarea when shown
+            document.getElementById('comments').focus();
+            return;
+        }
+
         commentsContent.classList.remove('hidden');
-        commentsContent.classList.add('visible');
-        
-        // Focus on the comments textarea when shown
-        document.getElementById('comments').focus();
-    });
-    
-    commentsNoBtn.addEventListener('click', function() {
-        commentsNoBtn.classList.add('active');
-        commentsYesBtn.classList.remove('active');
         commentsContent.classList.remove('visible');
         commentsContent.classList.add('hidden');
-        
+
         // Clear comments when hiding
         document.getElementById('comments').value = '';
     });
@@ -702,9 +692,9 @@ document.addEventListener('DOMContentLoaded', function() {
             agentsContainer.innerHTML = `
                 <div class="agent-item">
                     <input type="text" class="form-control agent-name" placeholder="Agent name" required>
-                    <div class="input-group agent-time">
+                    <div class="time-input-group agent-time">
                         <input type="time" class="form-control" placeholder="Arrived time">
-                        <span class="input-group-text time-status">TL</span>
+                        <span class="time-status">TL</span>
                         <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                             <i class="bi bi-clock"></i>
                         </button>
@@ -716,13 +706,16 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             
             // Reset bus gate to hidden state
-            busGateNoBtn.click();
-            
+            busGateSwitch.checked = false;
+            busGateSwitch.dispatchEvent(new Event('change'));
+
             // Reset special services to hidden state
-            servicesNoBtn.click();
-            
+            servicesSwitch.checked = false;
+            servicesSwitch.dispatchEvent(new Event('change'));
+
             // Reset comments to hidden state
-            commentsNoBtn.click();
+            commentsSwitch.checked = false;
+            commentsSwitch.dispatchEvent(new Event('change'));
             
             // Re-add event listeners for the newly created agent
             const newAgentItem = agentsContainer.querySelector('.agent-item');

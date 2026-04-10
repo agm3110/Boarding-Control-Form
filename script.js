@@ -529,6 +529,85 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear comments when hiding
         document.getElementById('comments').value = '';
     });
+
+    // Delay Codes toggle functionality
+    const delayCodesSwitch = document.getElementById('delayCodesSwitch');
+    const delayCodesContent = document.getElementById('delayCodesContent');
+    const delayCodeSelect = document.getElementById('delayCodeSelect');
+    const delayCodesContainer = document.getElementById('delayCodesContainer');
+    let delayCodeItemCounter = 0;
+
+    const delayCodeData = {
+        '11': 'Aircraft damage/inspection',
+        '31': 'Passenger handling delay',
+        '32': 'Baggage handling delay',
+        '33': 'Cargo/mail delay',
+        '41': 'Ramp handling delay',
+        '51': 'Fueling delay',
+        '71': 'Weather at departure',
+        '83': 'Air traffic flow restrictions'
+    };
+
+    delayCodesSwitch.addEventListener('change', function() {
+        if (this.checked) {
+            delayCodesContent.classList.remove('hidden');
+            delayCodesContent.classList.add('visible');
+            return;
+        }
+
+        delayCodesContent.classList.remove('visible');
+        delayCodesContent.classList.add('hidden');
+
+        // Clear all delay code data when hiding
+        delayCodesContainer.innerHTML = '';
+        delayCodeSelect.value = '';
+    });
+
+    document.getElementById('addDelayCodeBtn').addEventListener('click', function() {
+        const code = delayCodeSelect.value;
+
+        if (!code) {
+            delayCodeSelect.classList.add('is-invalid');
+            setTimeout(() => {
+                delayCodeSelect.classList.remove('is-invalid');
+            }, 2000);
+            return;
+        }
+
+        delayCodeItemCounter += 1;
+        const itemId = `delay-code-${delayCodeItemCounter}`;
+        const description = delayCodeData[code] || 'Delay code';
+
+        const delayItem = document.createElement('div');
+        delayItem.className = 'delay-code-item';
+        delayItem.id = itemId;
+        delayItem.setAttribute('data-code', code);
+
+        delayItem.innerHTML = `
+            <div class="delay-code-header">
+                <div class="delay-code-title">
+                    <i class="bi bi-hourglass-split"></i>
+                    <span>${code} - ${description}</span>
+                </div>
+                <button type="button" class="btn btn-outline-danger btn-sm btn-remove-delay-code">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+            <div class="delay-code-controls">
+                <label for="minutes-${itemId}" class="form-label">Minutes</label>
+                <input type="number" class="form-control delay-code-minutes" id="minutes-${itemId}" min="0" placeholder="0">
+            </div>
+        `;
+
+        delayCodesContainer.appendChild(delayItem);
+
+        delayItem.querySelector('.btn-remove-delay-code').addEventListener('click', function() {
+            delayItem.remove();
+        });
+
+        delayCodeSelect.value = '';
+        delayItem.querySelector('.delay-code-minutes').focus();
+    });
     
     // Form submission
     document.getElementById('boardingControlForm').addEventListener('submit', function(e) {
@@ -597,6 +676,24 @@ document.addEventListener('DOMContentLoaded', function() {
         // Collect comments data
         const commentsVisible = !commentsContent.classList.contains('hidden');
         const commentsText = commentsVisible ? document.getElementById('comments').value.trim() : '';
+
+        // Collect delay codes data
+        const delayCodesVisible = !delayCodesContent.classList.contains('hidden');
+        const delayCodes = [];
+
+        if (delayCodesVisible) {
+            document.querySelectorAll('#delayCodesContainer .delay-code-item').forEach(item => {
+                const code = item.getAttribute('data-code');
+                const minutesInput = item.querySelector('.delay-code-minutes');
+                const minutes = parseInt(minutesInput.value, 10);
+
+                delayCodes.push({
+                    code: code,
+                    description: delayCodeData[code] || '',
+                    minutes: Number.isNaN(minutes) ? 0 : minutes
+                });
+            });
+        }
         
         // Collect form data
         const formData = {
@@ -605,7 +702,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 destination: document.getElementById('destination').value,
                 gate: document.getElementById('gate').value,
                 date: document.getElementById('date').value,
-                aircraft: document.getElementById('aircraft').value
+                aircraft: document.getElementById('aircraft') ? document.getElementById('aircraft').value : ''
             },
             scheduledActualTimes: {
                 sta: document.getElementById('sta').value || 'TL',
@@ -642,6 +739,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 services: specialServices
             },
             busGate: busGateData,
+            delayCodes: {
+                hasDelayCodes: delayCodesVisible,
+                codes: delayCodes
+            },
             comments: {
                 hasComments: commentsVisible,
                 text: commentsText
@@ -715,6 +816,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Reset comments to hidden state
             commentsSwitch.checked = false;
             commentsSwitch.dispatchEvent(new Event('change'));
+
+            // Reset delay codes to hidden state
+            delayCodesSwitch.checked = false;
+            delayCodesSwitch.dispatchEvent(new Event('change'));
             
             // Re-add event listeners for the newly created agent
             const newAgentItem = agentsContainer.querySelector('.agent-item');

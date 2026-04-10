@@ -65,6 +65,10 @@ body {
     display: flex;
 }
 
+.delay-codes-toggle {
+    display: flex;
+}
+
 .switch-toggle {
     position: relative;
     align-items: center;
@@ -176,6 +180,75 @@ body {
 .add-agent-btn:hover, .add-bus-btn:hover {
     background-color: #0085c3;
     transform: translateY(-2px);
+}
+
+.add-delay-code-btn {
+    background-color: var(--norwegian-light-blue);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.add-delay-code-btn:hover {
+    background-color: #0085c3;
+    transform: translateY(-2px);
+}
+
+.delay-codes-content {
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.delay-codes-content.hidden {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    padding-top: 0;
+}
+
+.delay-codes-content.visible {
+    max-height: 1000px;
+    opacity: 1;
+    margin-top: 15px;
+    padding-top: 15px;
+}
+
+.delay-code-dropdown-container {
+    margin-bottom: 20px;
+}
+
+.delay-code-item {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: var(--light-gray);
+}
+
+.delay-code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.delay-code-title {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+    color: var(--norwegian-dark-blue);
+}
+
+.delay-code-title i {
+    margin-right: 8px;
+    color: var(--norwegian-red);
+}
+
+.delay-code-controls {
+    max-width: 160px;
 }
 
 .time-input-group {

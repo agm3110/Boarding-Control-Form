@@ -59,7 +59,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (timeInput && statusElement) {
             timeInput.value = getCurrentTime();
-            updateTimeStatus(timeInput, statusElement);
             
             // Visual feedback
             button.classList.remove('btn-outline-secondary');

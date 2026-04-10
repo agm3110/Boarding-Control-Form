@@ -26,7 +26,7 @@
                 </header>
                 
                 <div class="form-container p-4">
-                    <form id="boardingControlForm">
+                    <form id="boardingControlForm" novalidate>
                         <!-- Flight Information Section -->
                         <div class="form-section">
                             <h4 class="section-title section-title-simple">
@@ -61,7 +61,7 @@
                                 <div class="col-6 col-md-3">
                                     <div class="time-input-group">
                                         <label for="sta" class="form-label">STA</label>
-                                        <input type="time" class="form-control" id="sta">
+                                        <input type="time" class="form-control" id="sta" required>
                                         <span class="time-status">TL</span>
                                         <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                                             <i class="bi bi-clock"></i>
@@ -71,7 +71,7 @@
                                 <div class="col-6 col-md-3">
                                     <div class="time-input-group">
                                         <label for="std" class="form-label">STD</label>
-                                        <input type="time" class="form-control" id="std">
+                                        <input type="time" class="form-control" id="std" required>
                                         <span class="time-status">TL</span>
                                         <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                                             <i class="bi bi-clock"></i>
@@ -81,7 +81,7 @@
                                 <div class="col-6 col-md-3">
                                     <div class="time-input-group">
                                         <label for="ata" class="form-label">ATA</label>
-                                        <input type="time" class="form-control" id="ata">
+                                        <input type="time" class="form-control" id="ata" required>
                                         <span class="time-status">TL</span>
                                         <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                                             <i class="bi bi-clock"></i>
@@ -91,7 +91,7 @@
                                 <div class="col-6 col-md-3">
                                     <div class="time-input-group">
                                         <label for="atd" class="form-label">ATD</label>
-                                        <input type="time" class="form-control" id="atd">
+                                        <input type="time" class="form-control" id="atd" required>
                                         <span class="time-status">TL</span>
                                         <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                                             <i class="bi bi-clock"></i>
@@ -110,7 +110,7 @@
                                 <div class="agent-item">
                                     <input type="text" class="form-control agent-name" placeholder="Agent name" required>
                                     <div class="time-input-group agent-time">
-                                        <input type="time" class="form-control" placeholder="Arrived time">
+                                        <input type="time" class="form-control" placeholder="Arrived time" required>
                                         <span class="time-status">TL</span>
                                         <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                                             <i class="bi bi-clock"></i>
@@ -135,7 +135,7 @@
                                 <div class="col-md-6 mb-3">
                                     <div class="time-input-group">
                                         <label for="boardingStart" class="form-label">Boarding Start</label>
-                                        <input type="time" class="form-control" id="boardingStart">
+                                        <input type="time" class="form-control" id="boardingStart" required>
                                         <span class="time-status">TL</span>
                                         <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                                             <i class="bi bi-clock"></i>
@@ -145,7 +145,7 @@
                                 <div class="col-md-6 mb-3">
                                     <div class="time-input-group">
                                         <label for="boardingClose" class="form-label">Boarding Close</label>
-                                        <input type="time" class="form-control" id="boardingClose">
+                                        <input type="time" class="form-control" id="boardingClose" required>
                                         <span class="time-status">TL</span>
                                         <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                                             <i class="bi bi-clock"></i>
@@ -155,7 +155,7 @@
                                 <div class="col-md-6 mb-3">
                                     <div class="time-input-group">
                                         <label for="gateOpen" class="form-label">Gate Open</label>
-                                        <input type="time" class="form-control" id="gateOpen">
+                                        <input type="time" class="form-control" id="gateOpen" required>
                                         <span class="time-status">TL</span>
                                         <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                                             <i class="bi bi-clock"></i>
@@ -165,7 +165,7 @@
                                 <div class="col-md-6 mb-3">
                                     <div class="time-input-group">
                                         <label for="gateClose" class="form-label">Gate Close</label>
-                                        <input type="time" class="form-control" id="gateClose">
+                                        <input type="time" class="form-control" id="gateClose" required>
                                         <span class="time-status">TL</span>
                                         <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                                             <i class="bi bi-clock"></i>
@@ -175,7 +175,7 @@
                                 <div class="col-md-6 mb-3">
                                     <div class="time-input-group">
                                         <label for="lastCall" class="form-label">Last Call</label>
-                                        <input type="time" class="form-control" id="lastCall">
+                                        <input type="time" class="form-control" id="lastCall" required>
                                         <span class="time-status">TL</span>
                                         <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                                             <i class="bi bi-clock"></i>
@@ -185,7 +185,7 @@
                                 <div class="col-md-6 mb-3">
                                     <div class="time-input-group">
                                         <label for="doorsClosed" class="form-label">Doors Closed</label>
-                                        <input type="time" class="form-control" id="doorsClosed">
+                                        <input type="time" class="form-control" id="doorsClosed" required>
                                         <span class="time-status">TL</span>
                                         <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                                             <i class="bi bi-clock"></i>
@@ -203,23 +203,23 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="totalBags" class="form-label">Total Bags</label>
-                                    <input type="number" class="form-control" id="totalBags" min="0">
+                                    <input type="number" class="form-control" id="totalBags" min="0" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="offloadBagsRequest" class="form-label">Offload Bags Request</label>
-                                    <input type="number" class="form-control" id="offloadBagsRequest" min="0">
+                                    <input type="number" class="form-control" id="offloadBagsRequest" min="0" required>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="gateBagsCharged" class="form-label">Gate Bags Charged</label>
-                                    <input type="number" class="form-control" id="gateBagsCharged" min="0">
+                                    <input type="number" class="form-control" id="gateBagsCharged" min="0" required>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="totalChargedAmount" class="form-label">Total Charged Amount (DKK)</label>
-                                    <input type="number" class="form-control" id="totalChargedAmount" min="0" step="0.01">
+                                    <input type="number" class="form-control" id="totalChargedAmount" min="0" step="0.01" required>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="gateBagsTagged" class="form-label">Gate Bags Tagged</label>
-                                    <input type="number" class="form-control" id="gateBagsTagged" min="0">
+                                    <input type="number" class="form-control" id="gateBagsTagged" min="0" required>
                                 </div>
                             </div>
                         </div>
@@ -233,28 +233,28 @@
                                 <div class="col-md-6">
                                     <label class="form-label">Pax Accepted</label>
                                     <div class="passenger-count">
-                                        <input type="number" class="form-control" id="paxAcceptedAdult" placeholder="Adults" min="0">
+                                        <input type="number" class="form-control" id="paxAcceptedAdult" placeholder="Adults" min="0" required>
                                         <span>+</span>
-                                        <input type="number" class="form-control" id="paxAcceptedInfant" placeholder="Infants" min="0">
+                                        <input type="number" class="form-control" id="paxAcceptedInfant" placeholder="Infants" min="0" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">Pax Boarded</label>
                                     <div class="passenger-count">
-                                        <input type="number" class="form-control" id="paxBoardedAdult" placeholder="Adults" min="0">
+                                        <input type="number" class="form-control" id="paxBoardedAdult" placeholder="Adults" min="0" required>
                                         <span>+</span>
-                                        <input type="number" class="form-control" id="paxBoardedInfant" placeholder="Infants" min="0">
+                                        <input type="number" class="form-control" id="paxBoardedInfant" placeholder="Infants" min="0" required>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="paxOffloaded" class="form-label">Pax Offloaded</label>
-                                    <input type="number" class="form-control" id="paxOffloaded" min="0">
+                                    <input type="number" class="form-control" id="paxOffloaded" min="0" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="noShow" class="form-label">No Show</label>
-                                    <input type="number" class="form-control" id="noShow" min="0">
+                                    <input type="number" class="form-control" id="noShow" min="0" required>
                                 </div>
                             </div>
                         </div>
@@ -409,7 +409,8 @@
                         </div>
                         
                         <!-- Submit Button -->
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <div class="form-actions d-grid gap-2 d-md-flex justify-content-md-end align-items-center">
+                            <div id="formStatusMessage" class="form-status-message" aria-live="polite"></div>
                             <button type="button" class="btn btn-secondary me-md-2" id="resetBtn">Reset</button>
                             <button type="submit" class="btn btn-primary">Submit Form</button>
                         </div>

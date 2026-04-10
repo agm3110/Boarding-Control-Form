@@ -89,6 +89,39 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    function getFieldLabel(field) {
+        if (field.id) {
+            const label = document.querySelector(`label[for="${field.id}"]`);
+            if (label) {
+                return label.textContent.trim();
+            }
+        }
+
+        if (field.placeholder) {
+            return field.placeholder.trim();
+        }
+
+        const groupLabel = field.closest('.time-input-group')?.querySelector('.form-label');
+        if (groupLabel) {
+            return groupLabel.textContent.trim();
+        }
+
+        return 'Required field';
+    }
+
+    function getMissingRequiredFields(form) {
+        const missing = [];
+
+        form.querySelectorAll('[required]').forEach(field => {
+            const value = (field.value || '').trim();
+            if (!value) {
+                missing.push(getFieldLabel(field));
+            }
+        });
+
+        return [...new Set(missing)];
+    }
     
     // Add agent functionality
     document.getElementById('addAgentBtn').addEventListener('click', function() {
@@ -98,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
         agentItem.innerHTML = `
             <input type="text" class="form-control agent-name" placeholder="Agent name" required>
             <div class="time-input-group agent-time">
-                <input type="time" class="form-control" placeholder="Arrived time">
+                <input type="time" class="form-control" placeholder="Arrived time" required>
                 <span class="time-status">TL</span>
                 <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                     <i class="bi bi-clock"></i>
@@ -623,6 +656,19 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form submission
     document.getElementById('boardingControlForm').addEventListener('submit', function(e) {
         e.preventDefault();
+
+        const form = document.getElementById('boardingControlForm');
+        const formStatusMessage = document.getElementById('formStatusMessage');
+
+        formStatusMessage.textContent = '';
+        formStatusMessage.classList.remove('error', 'success', 'visible');
+
+        const missingFields = getMissingRequiredFields(form);
+        if (missingFields.length > 0) {
+            formStatusMessage.textContent = `Missing required fields: ${missingFields.join(', ')}.`;
+            formStatusMessage.classList.add('error', 'visible');
+            return;
+        }
         
         // Collect agent data
         const agents = [];
@@ -767,19 +813,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const servicesText = servicesVisible ? `with ${Object.keys(specialServices).length} special service(s)` : 'without special services';
         const busGateText = busGateData.hasBusGate ? `with ${busGateData.buses.length} bus(es)` : 'without bus gate';
         const commentsTextDisplay = commentsVisible ? (commentsText ? 'with comments' : 'with empty comments section') : 'without comments';
-        const successAlert = document.createElement('div');
-        successAlert.className = 'alert alert-success alert-dismissible fade show';
-        successAlert.innerHTML = `
-            <strong>Success!</strong> Boarding control form has been submitted with ${agents.length} agent(s), ${servicesText}, ${busGateText}, and ${commentsTextDisplay}.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        `;
-        
-        const formContainer = document.querySelector('.form-container');
-        formContainer.insertBefore(successAlert, formContainer.firstChild);
+        formStatusMessage.textContent = `Success! Boarding control form has been submitted with ${agents.length} agent(s), ${servicesText}, ${busGateText}, and ${commentsTextDisplay}.`;
+        formStatusMessage.classList.remove('error');
+        formStatusMessage.classList.add('success', 'visible');
         
         // Auto-remove the alert after 5 seconds
         setTimeout(() => {
-            successAlert.remove();
+            formStatusMessage.textContent = '';
+            formStatusMessage.classList.remove('error', 'success', 'visible');
         }, 5000);
     });
     
@@ -804,7 +845,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="agent-item">
                     <input type="text" class="form-control agent-name" placeholder="Agent name" required>
                     <div class="time-input-group agent-time">
-                        <input type="time" class="form-control" placeholder="Arrived time">
+                        <input type="time" class="form-control" placeholder="Arrived time" required>
                         <span class="time-status">TL</span>
                         <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
                             <i class="bi bi-clock"></i>
@@ -845,6 +886,10 @@ document.addEventListener('DOMContentLoaded', function() {
             resetAgentTimeInput.addEventListener('input', function() {
                 updateTimeStatus(this, resetAgentStatusEl);
             });
+
+            const formStatusMessage = document.getElementById('formStatusMessage');
+            formStatusMessage.textContent = '';
+            formStatusMessage.classList.remove('error', 'success', 'visible');
         }
     });
 });

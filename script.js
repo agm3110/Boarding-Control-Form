@@ -122,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         return [...new Set(missing)];
     }
-    
+
     // Add agent functionality
     document.getElementById('addAgentBtn').addEventListener('click', function() {
         const agentsContainer = document.getElementById('agentsContainer');
@@ -654,7 +654,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Form submission
-    document.getElementById('boardingControlForm').addEventListener('submit', function(e) {
+    document.getElementById('boardingControlForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const form = document.getElementById('boardingControlForm');
@@ -803,25 +803,49 @@ document.addEventListener('DOMContentLoaded', function() {
             comments: {
                 hasComments: commentsVisible,
                 text: commentsText
+            },
+            delivery: {
+                recipientEmail: document.getElementById('recipientEmail').value.trim()
             }
         };
         
-        // Here you would typically send the data to a server
+        // POST to server — server generates PDF and sends email with it as attachment
         console.log('Form Data:', formData);
-        
-        // Show success message
-        const servicesText = servicesVisible ? `with ${Object.keys(specialServices).length} special service(s)` : 'without special services';
-        const busGateText = busGateData.hasBusGate ? `with ${busGateData.buses.length} bus(es)` : 'without bus gate';
-        const commentsTextDisplay = commentsVisible ? (commentsText ? 'with comments' : 'with empty comments section') : 'without comments';
-        formStatusMessage.textContent = `Success! Boarding control form has been submitted with ${agents.length} agent(s), ${servicesText}, ${busGateText}, and ${commentsTextDisplay}.`;
-        formStatusMessage.classList.remove('error');
-        formStatusMessage.classList.add('success', 'visible');
-        
-        // Auto-remove the alert after 5 seconds
+
+        formStatusMessage.textContent = 'Sending…';
+        formStatusMessage.classList.remove('error', 'success');
+        formStatusMessage.classList.add('visible');
+
+        try {
+            const response = await fetch('/api/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                formStatusMessage.textContent = `Success! Email with PDF sent to ${formData.delivery.recipientEmail}.`;
+                formStatusMessage.classList.remove('error');
+                formStatusMessage.classList.add('success');
+            } else {
+                formStatusMessage.textContent = `Error: ${result.message || 'Failed to submit form.'}`;
+                formStatusMessage.classList.remove('success');
+                formStatusMessage.classList.add('error');
+            }
+        } catch (err) {
+            console.error('Submit error:', err);
+            formStatusMessage.textContent = 'Network error: Could not reach the server. Make sure server.js is running (npm start).';
+            formStatusMessage.classList.remove('success');
+            formStatusMessage.classList.add('error');
+        }
+
+        // Auto-remove the alert after 7 seconds
         setTimeout(() => {
             formStatusMessage.textContent = '';
             formStatusMessage.classList.remove('error', 'success', 'visible');
-        }, 5000);
+        }, 7000);
     });
     
     // Reset button

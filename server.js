@@ -61,6 +61,10 @@ function buildHtmlBody(formData) {
             td(c.code, `${c.description} — ${c.minutes} min`)).join('')
         : td('', 'No delay codes.');
 
+    const crewChange = formData.flightCrewChange && formData.flightCrewChange.hasCrewChange
+        ? td('Crew Arrived at the Gate', formData.flightCrewChange.crewArrivedTime || 'TL')
+        : td('', 'No crew change.');
+
     const comments = formData.comments.hasComments && formData.comments.text
         ? `<tr><td colspan="2" style="font-size:13px;padding:5px 0;white-space:pre-wrap;color:#111">${formData.comments.text}</td></tr>`
         : td('', 'No comments.');
@@ -132,6 +136,9 @@ function buildHtmlBody(formData) {
 
       ${section('Bus Gate')}
       ${buses}
+
+    ${section('Flight Crew Change')}
+    ${crewChange}
 
       ${section('Delay Codes')}
       ${delays}
@@ -300,6 +307,14 @@ function generatePdf(formData) {
             formData.busGate.buses.forEach(b => {
                 row(b.busNumber, `Arrived: ${b.arrivedTime || 'TL'}   |   Departed: ${b.departedTime || 'TL'}`);
             });
+        }
+
+        // ── Flight Crew Change ──────────────────────────────────────
+        section('Flight Crew Change');
+        if (!formData.flightCrewChange || !formData.flightCrewChange.hasCrewChange) {
+            row('', 'No crew change.');
+        } else {
+            row('Crew Arrived at the Gate', formData.flightCrewChange.crewArrivedTime || 'TL');
         }
 
         // ── Delay Codes ───────────────────────────────────────────────

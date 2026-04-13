@@ -336,6 +336,33 @@
                             </div>
                         </div>
 
+                        <!-- Flight Crew Change Section -->
+                        <div class="form-section">
+                            <h4 class="section-title">
+                                <div class="section-title-text">
+                                    <i class="bi bi-person-badge-fill"></i> Flight Crew Change
+                                </div>
+                                <div class="form-check form-switch crew-change-toggle switch-toggle">
+                                    <input class="form-check-input section-switch-input" type="checkbox" id="crewChangeSwitch">
+                                    <label class="form-check-label visually-hidden" for="crewChangeSwitch">Flight Crew Change toggle</label>
+                                </div>
+                            </h4>
+                            <div class="flight-crew-change-content hidden" id="flightCrewChangeContent">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="time-input-group">
+                                            <label for="crewArrivedTime" class="form-label">Crew Arrived at the Gate</label>
+                                            <input type="time" class="form-control" id="crewArrivedTime">
+                                            <span class="time-status">TL</span>
+                                            <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
+                                                <i class="bi bi-clock"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Delay Codes Section -->
                         <div class="form-section">
                             <h4 class="section-title">

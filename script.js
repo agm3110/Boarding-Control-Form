@@ -540,6 +540,34 @@ document.addEventListener('DOMContentLoaded', function() {
             handleBusTimeButtonClick(this);
         });
     });
+
+    // Flight Crew Change toggle functionality
+    const crewChangeSwitch = document.getElementById('crewChangeSwitch');
+    const flightCrewChangeContent = document.getElementById('flightCrewChangeContent');
+    const crewArrivedTimeInput = document.getElementById('crewArrivedTime');
+
+    function setCrewChangeState(hasChange) {
+        if (hasChange) {
+            flightCrewChangeContent.classList.remove('hidden');
+            flightCrewChangeContent.classList.add('visible');
+            crewArrivedTimeInput.focus();
+            return;
+        }
+
+        flightCrewChangeContent.classList.remove('visible');
+        flightCrewChangeContent.classList.add('hidden');
+        crewArrivedTimeInput.value = '';
+
+        const crewStatus = flightCrewChangeContent.querySelector('.time-status');
+        if (crewStatus) {
+            crewStatus.textContent = 'TL';
+            crewStatus.classList.remove('has-time');
+        }
+    }
+
+    crewChangeSwitch.addEventListener('change', function() {
+        setCrewChangeState(this.checked);
+    });
     
     // Comments toggle functionality
     const commentsSwitch = document.getElementById('commentsSwitch');
@@ -734,6 +762,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const commentsVisible = !commentsContent.classList.contains('hidden');
         const commentsText = commentsVisible ? document.getElementById('comments').value.trim() : '';
 
+        // Collect flight crew change data
+        const hasFlightCrewChange = crewChangeSwitch.checked;
+        const crewArrivedTime = hasFlightCrewChange ? (crewArrivedTimeInput.value || 'TL') : 'TL';
+
         // Collect delay codes data
         const delayCodesVisible = !delayCodesContent.classList.contains('hidden');
         const delayCodes = [];
@@ -796,6 +828,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 services: specialServices
             },
             busGate: busGateData,
+            flightCrewChange: {
+                hasCrewChange: hasFlightCrewChange,
+                crewArrivedTime: crewArrivedTime
+            },
             delayCodes: {
                 hasDelayCodes: delayCodesVisible,
                 codes: delayCodes
@@ -896,6 +932,10 @@ document.addEventListener('DOMContentLoaded', function() {
             // Reset delay codes to hidden state
             delayCodesSwitch.checked = false;
             delayCodesSwitch.dispatchEvent(new Event('change'));
+
+            // Reset flight crew change to "No"
+            crewChangeSwitch.checked = false;
+            setCrewChangeState(false);
             
             // Re-add event listeners for the newly created agent
             const newAgentItem = agentsContainer.querySelector('.agent-item');

@@ -61,7 +61,7 @@ body {
     color: var(--norwegian-red);
 }
 
-.services-toggle, .bus-gate-toggle, .comments-toggle {
+.services-toggle, .bus-gate-toggle, .comments-toggle, .crew-change-toggle {
     display: flex;
 }
 
@@ -129,19 +129,19 @@ body {
     border-color: var(--danger-color);
 }
 
-.services-content, .bus-gate-content, .comments-content {
+.services-content, .bus-gate-content, .comments-content, .flight-crew-change-content {
     transition: all 0.3s ease;
     overflow: hidden;
 }
 
-.services-content.hidden, .bus-gate-content.hidden, .comments-content.hidden {
+.services-content.hidden, .bus-gate-content.hidden, .comments-content.hidden, .flight-crew-change-content.hidden {
     max-height: 0;
     opacity: 0;
     margin-top: 0;
     padding-top: 0;
 }
 
-.services-content.visible, .bus-gate-content.visible, .comments-content.visible {
+.services-content.visible, .bus-gate-content.visible, .comments-content.visible, .flight-crew-change-content.visible {
     max-height: 1000px;
     opacity: 1;
     margin-top: 15px;
@@ -585,7 +585,7 @@ body {
         gap: 10px;
     }
 
-    .services-toggle, .bus-gate-toggle, .comments-toggle {
+    .services-toggle, .bus-gate-toggle, .comments-toggle, .crew-change-toggle {
         width: 100%;
     }
 

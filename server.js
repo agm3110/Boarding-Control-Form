@@ -17,9 +17,11 @@ app.use(express.static(path.join(__dirname)));
 const EMAIL_CONFIG = {
     smtpHost: process.env.SMTP_HOST || 'smtp.gmail.com',
     smtpPort: Number(process.env.SMTP_PORT) || 587,
+    secure: process.env.SMTP_SECURE === 'true',
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
-    fromName: process.env.SMTP_FROM_NAME || 'Norwegian BCF'
+    fromName: process.env.SMTP_FROM_NAME || 'Norwegian BCF',
+    allowSelfSigned: process.env.SMTP_ALLOW_SELF_SIGNED === 'true'
 };
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -349,7 +351,7 @@ app.post('/api/submit', async (req, res) => {
         }
 
         // Validate email config
-        if (EMAIL_CONFIG.user.startsWith('YOUR_') || EMAIL_CONFIG.pass.startsWith('YOUR_')) {
+        if (!EMAIL_CONFIG.user || !EMAIL_CONFIG.pass) {
             return res.status(500).json({
                 success: false,
                 message: 'Email not configured. Set SMTP_USER and SMTP_PASS before starting the server, or update server.js.'
@@ -367,8 +369,11 @@ app.post('/api/submit', async (req, res) => {
         const transporter = nodemailer.createTransport({
             host:   EMAIL_CONFIG.smtpHost,
             port:   EMAIL_CONFIG.smtpPort,
-            secure: false,
-            auth:   { user: EMAIL_CONFIG.user, pass: EMAIL_CONFIG.pass }
+            secure: EMAIL_CONFIG.secure,
+            auth:   { user: EMAIL_CONFIG.user, pass: EMAIL_CONFIG.pass },
+            tls: {
+                rejectUnauthorized: !EMAIL_CONFIG.allowSelfSigned
+            }
         });
 
         await transporter.sendMail({

@@ -1,5 +1,7 @@
 'use strict';
 
+require('dotenv').config();
+
 const express  = require('express');
 const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
@@ -13,11 +15,11 @@ app.use(express.static(path.join(__dirname)));
 // For Gmail: enable 2-Factor Authentication, then create an App Password at
 // https://myaccount.google.com/apppasswords  (choose "Mail" + your device)
 const EMAIL_CONFIG = {
-    smtpHost: 'smtp.gmail.com',
-    smtpPort: 587,
-    user: 'YOUR_GMAIL_ADDRESS@gmail.com',  // ← replace with your Gmail address
-    pass: 'YOUR_APP_PASSWORD',             // ← replace with your 16-char App Password
-    fromName: 'Norwegian BCF'
+    smtpHost: process.env.SMTP_HOST || 'smtp.gmail.com',
+    smtpPort: Number(process.env.SMTP_PORT) || 587,
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+    fromName: process.env.SMTP_FROM_NAME || 'Norwegian BCF'
 };
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -350,7 +352,7 @@ app.post('/api/submit', async (req, res) => {
         if (EMAIL_CONFIG.user.startsWith('YOUR_') || EMAIL_CONFIG.pass.startsWith('YOUR_')) {
             return res.status(500).json({
                 success: false,
-                message: 'Email not configured. Open server.js and set your Gmail address and App Password.'
+                message: 'Email not configured. Set SMTP_USER and SMTP_PASS before starting the server, or update server.js.'
             });
         }
 
@@ -394,5 +396,5 @@ app.post('/api/submit', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`\nNorwegian BCF server → http://localhost:${PORT}`);
-    console.log('Make sure your Gmail credentials are set in server.js\n');
+    console.log('Make sure SMTP_USER and SMTP_PASS are set, or update server.js\n');
 });

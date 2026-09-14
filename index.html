@@ -38,8 +38,30 @@
                                     <input type="text" class="form-control" id="flightNumber" placeholder="e.g., DY1234" required>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label for="destination" class="form-label">Destination</label>
-                                    <input type="text" class="form-control" id="destination" placeholder="e.g., London" required>
+                                    <label for="destination" class="form-label">Destination (IATA)</label>
+                                    <input type="text" class="form-control" id="destination" list="destinationOptions" placeholder="e.g., LHR - London Heathrow" required>
+                                    <datalist id="destinationOptions">
+                                        <option value="OSL - Oslo Gardermoen"></option>
+                                        <option value="ARN - Stockholm Arlanda"></option>
+                                        <option value="CPH - Copenhagen Airport"></option>
+                                        <option value="GOT - Gothenburg Landvetter"></option>
+                                        <option value="BGO - Bergen Airport"></option>
+                                        <option value="TRD - Trondheim Airport"></option>
+                                        <option value="AAL - Aalborg Airport"></option>
+                                        <option value="LHR - London Heathrow"></option>
+                                        <option value="LGW - London Gatwick"></option>
+                                        <option value="MAD - Madrid Barajas"></option>
+                                        <option value="BCN - Barcelona El Prat"></option>
+                                        <option value="CDG - Paris Charles de Gaulle"></option>
+                                        <option value="AMS - Amsterdam Schiphol"></option>
+                                        <option value="FRA - Frankfurt Airport"></option>
+                                        <option value="DXB - Dubai International"></option>
+                                        <option value="JFK - John F. Kennedy"></option>
+                                        <option value="SFO - San Francisco"></option>
+                                        <option value="MUC - Munich Airport"></option>
+                                        <option value="PRG - Prague Airport"></option>
+                                        <option value="HEL - Helsinki Airport"></option>
+                                    </datalist>
                                 </div>
                                 <div class="col-md-3 mb-3">
                                     <label for="gate" class="form-label">Gate</label>
@@ -315,6 +337,9 @@
                                                 <div class="time-input-group">
                                                     <input type="time" class="form-control bus-arrived-time">
                                                     <span class="time-status">TL</span>
+                                                    <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
+                                                        <i class="bi bi-clock"></i>
+                                                    </button>
                                                 </div>
                                             </div>
                                             <div class="bus-time-group">
@@ -322,6 +347,9 @@
                                                 <div class="time-input-group">
                                                     <input type="time" class="form-control bus-departed-time">
                                                     <span class="time-status">TL</span>
+                                                    <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
+                                                        <i class="bi bi-clock"></i>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -442,8 +470,8 @@
                             </h4>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="recipientEmail" class="form-label">Recipient Email</label>
-                                    <input type="email" class="form-control" id="recipientEmail" placeholder="name@example.com" required>
+                                    <label for="recipientEmail" class="form-label">Recipient Email (optional for archive)</label>
+                                    <input type="email" class="form-control" id="recipientEmail" placeholder="name@example.com">
                                 </div>
                             </div>
                         </div>
@@ -451,6 +479,7 @@
                         <!-- Submit Button -->
                         <div class="form-actions d-grid gap-2 d-md-flex justify-content-md-end align-items-center">
                             <div id="formStatusMessage" class="form-status-message" aria-live="polite"></div>
+                            <a href="/records" class="btn btn-outline-primary me-md-2" target="_blank" rel="noopener">Open Archive</a>
                             <button type="button" class="btn btn-secondary me-md-2" id="resetBtn">Reset</button>
                             <button type="submit" class="btn btn-primary">Submit Form</button>
                         </div>

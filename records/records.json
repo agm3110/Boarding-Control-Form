@@ -1,0 +1,112 @@
+[
+  {
+    "id": "record-1789349164792",
+    "flightNumber": "DY2004",
+    "destination": "MAD",
+    "date": "2026-09-14",
+    "createdAt": "2026-09-14T01:26:04.792Z",
+    "pdfFile": "boarding-control-DY2004-2026-09-14-2026-09-14T01-26-04-787Z.pdf",
+    "pdfUrl": "/records/boarding-control-DY2004-2026-09-14-2026-09-14T01-26-04-787Z.pdf",
+    "recipientEmail": "test@example.com"
+  },
+  {
+    "id": "record-1789349162572",
+    "flightNumber": "DY2003",
+    "destination": "LHR",
+    "date": "2026-09-13",
+    "createdAt": "2026-09-14T01:26:02.572Z",
+    "pdfFile": "boarding-control-DY2003-2026-09-13-2026-09-14T01-26-02-568Z.pdf",
+    "pdfUrl": "/records/boarding-control-DY2003-2026-09-13-2026-09-14T01-26-02-568Z.pdf",
+    "recipientEmail": "test@example.com"
+  },
+  {
+    "id": "record-1789349160333",
+    "flightNumber": "DY2002",
+    "destination": "CPH",
+    "date": "2026-09-12",
+    "createdAt": "2026-09-14T01:26:00.333Z",
+    "pdfFile": "boarding-control-DY2002-2026-09-12-2026-09-14T01-26-00-331Z.pdf",
+    "pdfUrl": "/records/boarding-control-DY2002-2026-09-12-2026-09-14T01-26-00-331Z.pdf",
+    "recipientEmail": "test@example.com"
+  },
+  {
+    "id": "record-1789349158139",
+    "flightNumber": "DY2001",
+    "destination": "ARN",
+    "date": "2026-09-11",
+    "createdAt": "2026-09-14T01:25:58.139Z",
+    "pdfFile": "boarding-control-DY2001-2026-09-11-2026-09-14T01-25-58-138Z.pdf",
+    "pdfUrl": "/records/boarding-control-DY2001-2026-09-11-2026-09-14T01-25-58-138Z.pdf",
+    "recipientEmail": "test@example.com"
+  },
+  {
+    "id": "record-1789349156027",
+    "flightNumber": "DY2000",
+    "destination": "OSL",
+    "date": "2026-09-10",
+    "createdAt": "2026-09-14T01:25:56.027Z",
+    "pdfFile": "boarding-control-DY2000-2026-09-10-2026-09-14T01-25-56-025Z.pdf",
+    "pdfUrl": "/records/boarding-control-DY2000-2026-09-10-2026-09-14T01-25-56-025Z.pdf",
+    "recipientEmail": "test@example.com"
+  },
+  {
+    "id": "record-1789348110001",
+    "flightNumber": "DY1004",
+    "destination": "MAD",
+    "date": "2026-09-14",
+    "createdAt": "2026-09-14T01:08:30.001Z",
+    "pdfFile": "boarding-control-DY1004-2026-09-14-2026-09-14T01-08-29-999Z.pdf",
+    "pdfUrl": "/records/boarding-control-DY1004-2026-09-14-2026-09-14T01-08-29-999Z.pdf",
+    "recipientEmail": "test@example.com"
+  },
+  {
+    "id": "record-1789348107972",
+    "flightNumber": "DY1003",
+    "destination": "LHR",
+    "date": "2026-09-14",
+    "createdAt": "2026-09-14T01:08:27.972Z",
+    "pdfFile": "boarding-control-DY1003-2026-09-14-2026-09-14T01-08-27-971Z.pdf",
+    "pdfUrl": "/records/boarding-control-DY1003-2026-09-14-2026-09-14T01-08-27-971Z.pdf",
+    "recipientEmail": "test@example.com"
+  },
+  {
+    "id": "record-1789348105954",
+    "flightNumber": "DY1002",
+    "destination": "CPH",
+    "date": "2026-09-14",
+    "createdAt": "2026-09-14T01:08:25.954Z",
+    "pdfFile": "boarding-control-DY1002-2026-09-14-2026-09-14T01-08-25-953Z.pdf",
+    "pdfUrl": "/records/boarding-control-DY1002-2026-09-14-2026-09-14T01-08-25-953Z.pdf",
+    "recipientEmail": "test@example.com"
+  },
+  {
+    "id": "record-1789348103942",
+    "flightNumber": "DY1001",
+    "destination": "ARN",
+    "date": "2026-09-14",
+    "createdAt": "2026-09-14T01:08:23.942Z",
+    "pdfFile": "boarding-control-DY1001-2026-09-14-2026-09-14T01-08-23-937Z.pdf",
+    "pdfUrl": "/records/boarding-control-DY1001-2026-09-14-2026-09-14T01-08-23-937Z.pdf",
+    "recipientEmail": "test@example.com"
+  },
+  {
+    "id": "record-1789348102220",
+    "flightNumber": "DY1000",
+    "destination": "OSL",
+    "date": "2026-09-14",
+    "createdAt": "2026-09-14T01:08:22.220Z",
+    "pdfFile": "boarding-control-DY1000-2026-09-14-2026-09-14T01-08-22-218Z.pdf",
+    "pdfUrl": "/records/boarding-control-DY1000-2026-09-14-2026-09-14T01-08-22-218Z.pdf",
+    "recipientEmail": "test@example.com"
+  },
+  {
+    "id": "record-1789347485609",
+    "flightNumber": "DY1234",
+    "destination": "London",
+    "date": "2026-09-14",
+    "createdAt": "2026-09-14T00:58:05.610Z",
+    "pdfFile": "boarding-control-DY1234-2026-09-14-2026-09-14T00-58-05-607Z.pdf",
+    "pdfUrl": "/records/boarding-control-DY1234-2026-09-14-2026-09-14T00-58-05-607Z.pdf",
+    "recipientEmail": "test@example.com"
+  }
+]

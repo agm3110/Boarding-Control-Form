@@ -123,6 +123,409 @@ document.addEventListener('DOMContentLoaded', function() {
         return [...new Set(missing)];
     }
 
+    function buildAgentItem(name = '', arrivedTime = '') {
+        const item = document.createElement('div');
+        item.className = 'agent-item';
+        item.innerHTML = `
+            <input type="text" class="form-control agent-name" placeholder="Agent name" value="${(name || '').replace(/"/g, '&quot;')}" required>
+            <div class="time-input-group agent-time">
+                <input type="time" class="form-control" placeholder="Arrived time" value="${arrivedTime || ''}" required>
+                <span class="time-status">${arrivedTime ? '' : 'TL'}</span>
+                <button type="button" class="btn btn-outline-secondary current-time-btn" title="Set current time">
+                    <i class="bi bi-clock"></i>
+                </button>
+            </div>
+            <button type="button" class="btn btn-outline-danger btn-sm btn-remove">
+                <i class="bi bi-trash"></i>
+            </button>
+        `;
+
+        item.querySelector('.btn-remove').addEventListener('click', function() {
+            item.remove();
+        });
+
+        const newTimeButton = item.querySelector('.current-time-btn');
+        newTimeButton.addEventListener('click', function() {
+            handleTimeButtonClick(this);
+        });
+
+        const newTimeInput = item.querySelector('input[type="time"]');
+        const newStatusElement = item.querySelector('.time-status');
+        newTimeInput.addEventListener('input', function() {
+            updateTimeStatus(this, newStatusElement);
+        });
+
+        return item;
+    }
+
+    function populateAgents(agents = []) {
+        const agentsContainer = document.getElementById('agentsContainer');
+        agentsContainer.innerHTML = '';
+
+        if (!agents.length) {
+            agentsContainer.appendChild(buildAgentItem());
+            return;
+        }
+
+        agents.forEach(agent => {
+            agentsContainer.appendChild(buildAgentItem(agent.name || '', agent.arrivedTime || ''));
+        });
+    }
+
+    function populateBusGate(buses = []) {
+        const busesContainer = document.getElementById('busesContainer');
+        busesContainer.innerHTML = '';
+
+        if (!buses.length) {
+            const busItem = document.createElement('div');
+            busItem.className = 'bus-item';
+            busItem.innerHTML = `
+                <div class="bus-number">Bus 1</div>
+                <div class="bus-times">
+                    <div class="bus-time-group">
+                        <label class="form-label">Arrived Time</label>
+                        <div class="time-input-group">
+                            <input type="time" class="form-control bus-arrived-time">
+                            <span class="time-status">TL</span>
+                            <button type="button" class="btn btn-outline-secondary current-time-btn bus-time-btn" title="Set current time">
+                                <i class="bi bi-clock"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bus-time-group">
+                        <label class="form-label">Departed Time</label>
+                        <div class="time-input-group">
+                            <input type="time" class="form-control bus-departed-time">
+                            <span class="time-status">TL</span>
+                            <button type="button" class="btn btn-outline-secondary current-time-btn bus-time-btn" title="Set current time">
+                                <i class="bi bi-clock"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-danger btn-sm btn-remove" style="visibility: hidden;">
+                    <i class="bi bi-trash"></i>
+                </button>
+            `;
+            busesContainer.appendChild(busItem);
+            return;
+        }
+
+        buses.forEach((bus, index) => {
+            const busItem = document.createElement('div');
+            busItem.className = 'bus-item';
+            busItem.innerHTML = `
+                <div class="bus-number">Bus ${index + 1}</div>
+                <div class="bus-times">
+                    <div class="bus-time-group">
+                        <label class="form-label">Arrived Time</label>
+                        <div class="time-input-group">
+                            <input type="time" class="form-control bus-arrived-time" value="${bus.arrivedTime && bus.arrivedTime !== 'TL' ? bus.arrivedTime : ''}">
+                            <span class="time-status">${bus.arrivedTime && bus.arrivedTime !== 'TL' ? '' : 'TL'}</span>
+                            <button type="button" class="btn btn-outline-secondary current-time-btn bus-time-btn" title="Set current time">
+                                <i class="bi bi-clock"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bus-time-group">
+                        <label class="form-label">Departed Time</label>
+                        <div class="time-input-group">
+                            <input type="time" class="form-control bus-departed-time" value="${bus.departedTime && bus.departedTime !== 'TL' ? bus.departedTime : ''}">
+                            <span class="time-status">${bus.departedTime && bus.departedTime !== 'TL' ? '' : 'TL'}</span>
+                            <button type="button" class="btn btn-outline-secondary current-time-btn bus-time-btn" title="Set current time">
+                                <i class="bi bi-clock"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-outline-danger btn-sm btn-remove">
+                    <i class="bi bi-trash"></i>
+                </button>
+            `;
+
+            busItem.querySelector('.btn-remove').addEventListener('click', function() {
+                busItem.remove();
+                updateBusNumbers();
+            });
+
+            busItem.querySelectorAll('.bus-time-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    handleBusTimeButtonClick(this);
+                });
+            });
+
+            busItem.querySelectorAll('input[type="time"]').forEach(input => {
+                input.addEventListener('input', function() {
+                    const timeInputGroup = this.closest('.time-input-group');
+                    if (timeInputGroup) {
+                        const statusElement = timeInputGroup.querySelector('.time-status');
+                        if (statusElement) {
+                            updateTimeStatus(this, statusElement);
+                        }
+                    }
+                });
+            });
+
+            busesContainer.appendChild(busItem);
+        });
+    }
+
+    function populateSpecialServices(services = {}) {
+        const servicesContainer = document.getElementById('specialServicesContainer');
+        servicesContainer.innerHTML = '';
+
+        Object.entries(services).forEach(([serviceCode, data]) => {
+            const service = serviceData[serviceCode];
+            if (!service) return;
+
+            const serviceItem = document.createElement('div');
+            serviceItem.className = 'service-item';
+            serviceItem.id = `service-${serviceCode}`;
+            serviceItem.innerHTML = `
+                <div class="service-header">
+                    <div class="service-title">
+                        <i class="bi ${service.icon}"></i>
+                        <span>${serviceCode} - ${service.name}</span>
+                    </div>
+                    <button type="button" class="btn btn-outline-danger btn-sm btn-remove-service">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="service-description">${service.description}</div>
+                <div class="service-controls">
+                    <div class="service-count-group">
+                        <label for="count-${serviceCode}" class="form-label">Count</label>
+                        <input type="number" class="form-control service-count" id="count-${serviceCode}" min="0" value="${data.count || 0}" placeholder="0">
+                    </div>
+                    <div class="service-seats-group">
+                        <label class="form-label">Seat Numbers</label>
+                        <div class="service-seats" id="seats-${serviceCode}"></div>
+                    </div>
+                </div>
+            `;
+
+            serviceItem.querySelector('.btn-remove-service').addEventListener('click', function() {
+                serviceItem.remove();
+            });
+
+            const countInput = serviceItem.querySelector(`#count-${serviceCode}`);
+            countInput.addEventListener('input', function() {
+                const count = parseInt(this.value) || 0;
+                updateSeatInputs(serviceCode, count);
+            });
+
+            servicesContainer.appendChild(serviceItem);
+            updateSeatInputs(serviceCode, Number(data.count || 0));
+
+            const seatInputs = serviceItem.querySelectorAll('.seat-input');
+            if (Array.isArray(data.seats)) {
+                seatInputs.forEach((seatInput, index) => {
+                    seatInput.value = data.seats[index] || '';
+                });
+            }
+        });
+    }
+
+    function populateDelayCodes(codes = []) {
+        const delayCodesContainer = document.getElementById('delayCodesContainer');
+        delayCodesContainer.innerHTML = '';
+
+        codes.forEach((item, index) => {
+            const code = item.code || '';
+            const description = item.description || delayCodeData[code] || 'Delay code';
+            const itemId = `delay-code-${index + 1}`;
+            const delayItem = document.createElement('div');
+            delayItem.className = 'delay-code-item';
+            delayItem.id = itemId;
+            delayItem.setAttribute('data-code', code);
+            delayItem.innerHTML = `
+                <div class="delay-code-header">
+                    <div class="delay-code-title">
+                        <i class="bi bi-hourglass-split"></i>
+                        <span>${code} - ${description}</span>
+                    </div>
+                    <button type="button" class="btn btn-outline-danger btn-sm btn-remove-delay-code">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="delay-code-controls">
+                    <label for="minutes-${itemId}" class="form-label">Minutes</label>
+                    <input type="number" class="form-control delay-code-minutes" id="minutes-${itemId}" min="0" value="${item.minutes || 0}" placeholder="0">
+                </div>
+            `;
+
+            delayItem.querySelector('.btn-remove-delay-code').addEventListener('click', function() {
+                delayItem.remove();
+            });
+
+            delayCodesContainer.appendChild(delayItem);
+        });
+    }
+
+    function normalizeDestinationValue(rawValue) {
+        if (!rawValue) return '';
+        if (rawValue.includes(' - ')) return rawValue;
+
+        const map = {
+            OSL: 'OSL - Oslo Gardermoen',
+            ARN: 'ARN - Stockholm Arlanda',
+            CPH: 'CPH - Copenhagen Airport',
+            LHR: 'LHR - London Heathrow',
+            MAD: 'MAD - Madrid Barajas',
+            BGO: 'BGO - Bergen Airport',
+            GOT: 'GOT - Gothenburg Landvetter',
+            TRD: 'TRD - Trondheim Airport',
+            AAL: 'AAL - Aalborg Airport',
+            AMS: 'AMS - Amsterdam Schiphol',
+            CDG: 'CDG - Paris Charles de Gaulle',
+            FRA: 'FRA - Frankfurt Airport',
+            HEL: 'HEL - Helsinki Airport',
+            MUC: 'MUC - Munich Airport',
+            PRG: 'PRG - Prague Airport',
+            LGW: 'LGW - London Gatwick',
+            BCN: 'BCN - Barcelona El Prat',
+            DXB: 'DXB - Dubai International',
+            JFK: 'JFK - John F. Kennedy',
+            SFO: 'SFO - San Francisco'
+        };
+
+        return map[rawValue.toUpperCase()] || rawValue;
+    }
+
+    function setFormFieldValue(fieldId, value, defaultValue = '') {
+        const input = document.getElementById(fieldId);
+        if (!input) return;
+        input.value = (value === undefined || value === null || value === 'TL') ? defaultValue : value;
+    }
+
+    function populateFormFromRecord(record) {
+        const data = record && record.formData ? record.formData : record || {};
+        const flightInfo = data.flightInfo || {};
+
+        setFormFieldValue('flightNumber', flightInfo.flightNumber || '');
+        const destinationValue = normalizeDestinationValue(flightInfo.destination || '');
+        setFormFieldValue('destination', destinationValue, '');
+        setFormFieldValue('gate', flightInfo.gate || '', '');
+        setFormFieldValue('date', flightInfo.date || '', '');
+
+        const scheduled = data.scheduledActualTimes || {};
+        setFormFieldValue('sta', scheduled.sta || '', '');
+        setFormFieldValue('std', scheduled.std || '', '');
+        setFormFieldValue('ata', scheduled.ata || '', '');
+        setFormFieldValue('atd', scheduled.atd || '', '');
+
+        const times = data.times || {};
+        setFormFieldValue('boardingStart', times.boardingStart || '', '');
+        setFormFieldValue('boardingClose', times.boardingClose || '', '');
+        setFormFieldValue('gateOpen', times.gateOpen || '', '');
+        setFormFieldValue('gateClose', times.gateClose || '', '');
+        setFormFieldValue('lastCall', times.lastCall || '', '');
+        setFormFieldValue('doorsClosed', times.doorsClosed || '', '');
+
+        const bags = data.bagsData || {};
+        setFormFieldValue('totalBags', bags.totalBags || '', '');
+        setFormFieldValue('offloadBagsRequest', bags.offloadBagsRequest || '', '');
+        setFormFieldValue('gateBagsCharged', bags.gateBagsCharged || '', '');
+        setFormFieldValue('totalChargedAmount', bags.totalChargedAmount || '', '');
+        setFormFieldValue('gateBagsTagged', bags.gateBagsTagged || '', '');
+
+        const passengers = data.passengerData || {};
+        setFormFieldValue('paxAcceptedAdult', passengers.paxAcceptedAdult || '', '');
+        setFormFieldValue('paxAcceptedInfant', passengers.paxAcceptedInfant || '', '');
+        setFormFieldValue('paxBoardedAdult', passengers.paxBoardedAdult || '', '');
+        setFormFieldValue('paxBoardedInfant', passengers.paxBoardedInfant || '', '');
+        setFormFieldValue('paxOffloaded', passengers.paxOffloaded || '', '');
+        setFormFieldValue('noShow', passengers.noShow || '', '');
+
+        const recipientEmail = (data.delivery && data.delivery.recipientEmail) || '';
+        setFormFieldValue('recipientEmail', recipientEmail, '');
+
+        const isServices = !!(data.specialServices && data.specialServices.hasServices);
+        const serviceDataMap = (data.specialServices && data.specialServices.services) || {};
+        servicesSwitch.checked = isServices;
+        if (isServices) {
+            servicesContent.classList.remove('hidden');
+            servicesContent.classList.add('visible');
+            populateSpecialServices(serviceDataMap);
+        } else {
+            servicesContent.classList.remove('visible');
+            servicesContent.classList.add('hidden');
+            document.getElementById('specialServicesContainer').innerHTML = '';
+        }
+
+        const buses = (data.busGate && data.busGate.buses) || [];
+        busGateSwitch.checked = !!(data.busGate && data.busGate.hasBusGate);
+        if (busGateSwitch.checked) {
+            busGateContent.classList.remove('hidden');
+            busGateContent.classList.add('visible');
+            populateBusGate(buses);
+        } else {
+            busGateContent.classList.remove('visible');
+            busGateContent.classList.add('hidden');
+            populateBusGate([]);
+        }
+
+        const crewChange = data.flightCrewChange || {};
+        crewChangeSwitch.checked = !!crewChange.hasCrewChange;
+        setCrewChangeState(crewChangeSwitch.checked);
+        if (crewChangeSwitch.checked) {
+            setFormFieldValue('crewArrivedTime', crewChange.crewArrivedTime || '', '');
+        }
+
+        const comments = data.comments || {};
+        commentsSwitch.checked = !!comments.hasComments;
+        if (commentsSwitch.checked) {
+            commentsContent.classList.remove('hidden');
+            commentsContent.classList.add('visible');
+            document.getElementById('comments').value = comments.text || '';
+        } else {
+            commentsContent.classList.remove('visible');
+            commentsContent.classList.add('hidden');
+            document.getElementById('comments').value = '';
+        }
+
+        const delayInfo = data.delayCodes || {};
+        delayCodesSwitch.checked = !!delayInfo.hasDelayCodes;
+        if (delayCodesSwitch.checked) {
+            delayCodesContent.classList.remove('hidden');
+            delayCodesContent.classList.add('visible');
+            populateDelayCodes(delayInfo.codes || []);
+        } else {
+            delayCodesContent.classList.remove('visible');
+            delayCodesContent.classList.add('hidden');
+            delayCodesContainer.innerHTML = '';
+        }
+
+        populateAgents(data.agents || []);
+    }
+
+    async function initEditMode() {
+        const params = new URLSearchParams(window.location.search);
+        const recordId = params.get('edit');
+        if (!recordId) return;
+
+        try {
+            const response = await fetch(`/api/records/${encodeURIComponent(recordId)}`);
+            const result = await response.json();
+            if (!response.ok || !result.record) {
+                throw new Error(result.message || 'Record not found');
+            }
+
+            const form = document.getElementById('boardingControlForm');
+            form.dataset.editRecordId = recordId;
+            populateFormFromRecord(result.record);
+
+            const formStatusMessage = document.getElementById('formStatusMessage');
+            formStatusMessage.textContent = 'Editing saved record. Update the form and save changes.';
+            formStatusMessage.classList.add('visible', 'success');
+        } catch (error) {
+            console.error('Edit load failed:', error);
+            const formStatusMessage = document.getElementById('formStatusMessage');
+            formStatusMessage.textContent = 'Unable to load the selected record for editing.';
+            formStatusMessage.classList.add('visible', 'error');
+        }
+    }
+
     // Add agent functionality
     document.getElementById('addAgentBtn').addEventListener('click', function() {
         const agentsContainer = document.getElementById('agentsContainer');
@@ -784,11 +1187,16 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
+        const destinationRaw = document.getElementById('destination').value.trim();
+        const destinationValue = destinationRaw ? destinationRaw.split(' - ')[0].trim() : '';
+        const editingRecordId = form.dataset.editRecordId || '';
+
         // Collect form data
         const formData = {
+            recordId: editingRecordId,
             flightInfo: {
                 flightNumber: document.getElementById('flightNumber').value,
-                destination: document.getElementById('destination').value,
+                destination: destinationValue,
                 gate: document.getElementById('gate').value,
                 date: document.getElementById('date').value,
                 aircraft: document.getElementById('aircraft') ? document.getElementById('aircraft').value : ''
@@ -862,9 +1270,24 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
 
             if (response.ok && result.success) {
-                formStatusMessage.textContent = `Success! Email with PDF sent to ${formData.delivery.recipientEmail}.`;
+                const emailText = formData.delivery.recipientEmail ? ` to ${formData.delivery.recipientEmail}` : '';
+                const actionText = editingRecordId ? 'updated in the archive' : 'saved to the archive page';
+                const successText = result.emailSent
+                    ? `Success! PDF ${actionText} and email sent${emailText}.`
+                    : `Success! PDF ${actionText}${emailText ? ` and email queued to ${formData.delivery.recipientEmail}` : ''}.`;
+
+                formStatusMessage.textContent = successText;
                 formStatusMessage.classList.remove('error');
                 formStatusMessage.classList.add('success');
+
+                if (editingRecordId) {
+                    form.dataset.editRecordId = '';
+                    if (window.location.search.includes('edit=')) {
+                        setTimeout(() => {
+                            window.location.href = '/records';
+                        }, 1200);
+                    }
+                }
             } else {
                 formStatusMessage.textContent = `Error: ${result.message || 'Failed to submit form.'}`;
                 formStatusMessage.classList.remove('success');
@@ -884,9 +1307,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 7000);
     });
     
+    initEditMode();
+
     // Reset button
     document.getElementById('resetBtn').addEventListener('click', function() {
         if (confirm('Are you sure you want to reset the form?')) {
+            document.getElementById('boardingControlForm').dataset.editRecordId = '';
             document.getElementById('boardingControlForm').reset();
             
             // Reset all time status elements

@@ -2,12 +2,36 @@
 
 require('dotenv').config();
 
+const fs = require('fs');
 const express  = require('express');
 const nodemailer = require('nodemailer');
 const PDFDocument = require('pdfkit');
 const path = require('path');
 
 const app = express();
+const RECORDS_DIR = path.join(__dirname, 'records');
+const MANIFEST_PATH = path.join(RECORDS_DIR, 'records.json');
+
+fs.mkdirSync(RECORDS_DIR, { recursive: true });
+if (!fs.existsSync(MANIFEST_PATH)) {
+    fs.writeFileSync(MANIFEST_PATH, JSON.stringify([], null, 2));
+}
+
+function loadRecords() {
+    try {
+        const raw = fs.readFileSync(MANIFEST_PATH, 'utf8');
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        console.error('Failed to read records manifest:', error.message);
+        return [];
+    }
+}
+
+function saveRecords(records) {
+    fs.writeFileSync(MANIFEST_PATH, JSON.stringify(records, null, 2));
+}
+
 app.use(express.json({ limit: '2mb' }));
 app.use(express.static(path.join(__dirname)));
 
@@ -351,7 +375,39 @@ function generatePdf(formData) {
     });
 }
 
+app.get('/records', (req, res) => {
+    res.sendFile(path.join(__dirname, 'records.html'));
+});
+
+app.get('/api/records', (req, res) => {
+    res.json(loadRecords());
+});
+
+app.get('/records/:filename', (req, res) => {
+    const filename = req.params.filename;
+    const safeFilename = path.basename(filename);
+    const filePath = path.join(RECORDS_DIR, safeFilename);
+
+    if (!fs.existsSync(filePath)) {
+        return res.status(404).json({ success: false, message: 'File not found.' });
+    }
+
+    res.sendFile(filePath);
+});
+
 // ── API route ────────────────────────────────────────────────────────────────
+app.get('/api/records/:id', (req, res) => {
+    const recordId = req.params.id;
+    const records = loadRecords();
+    const matching = records.find(record => record.id === recordId);
+
+    if (!matching) {
+        return res.status(404).json({ success: false, message: 'Record not found.' });
+    }
+
+    return res.json({ success: true, record: matching });
+});
+
 app.post('/api/submit', async (req, res) => {
     try {
         const formData = req.body;
@@ -361,50 +417,92 @@ app.post('/api/submit', async (req, res) => {
         }
 
         const recipientEmail = (formData.delivery && formData.delivery.recipientEmail) || '';
-        if (!recipientEmail) {
-            return res.status(400).json({ success: false, message: 'Recipient email is required.' });
-        }
-
-        // Validate email config
-        if (!EMAIL_CONFIG.user || !EMAIL_CONFIG.pass) {
-            return res.status(500).json({
-                success: false,
-                message: 'Email not configured. Set SMTP_USER and SMTP_PASS before starting the server, or update server.js.'
-            });
-        }
+        const records = loadRecords();
+        const existingRecord = formData.recordId ? records.find(record => record.id === formData.recordId) : null;
 
         // Generate PDF
         const pdfBuffer = await generatePdf(formData);
 
         const flight = (formData.flightInfo.flightNumber || 'flight').replace(/[^a-zA-Z0-9-]/g, '');
         const date   = formData.flightInfo.date || new Date().toISOString().split('T')[0];
-        const pdfFilename = `boarding-control-${flight}-${date}.pdf`;
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const pdfFilename = existingRecord ? existingRecord.pdfFile || `boarding-control-${flight}-${date}-${timestamp}.pdf` : `boarding-control-${flight}-${date}-${timestamp}.pdf`;
+        const pdfPath = path.join(RECORDS_DIR, pdfFilename);
+        fs.writeFileSync(pdfPath, pdfBuffer);
 
-        // Send email
-        const transporter = nodemailer.createTransport({
-            host:   EMAIL_CONFIG.smtpHost,
-            port:   EMAIL_CONFIG.smtpPort,
-            secure: EMAIL_CONFIG.secure,
-            auth:   { user: EMAIL_CONFIG.user, pass: EMAIL_CONFIG.pass },
-            tls: {
-                rejectUnauthorized: !EMAIL_CONFIG.allowSelfSigned
-            }
-        });
+        const rawDestination = formData.flightInfo.destination || 'N/A';
+        const destination = rawDestination.includes(' - ') ? rawDestination.split(' - ')[0] : rawDestination;
 
-        await transporter.sendMail({
-            from:    `"${EMAIL_CONFIG.fromName}" <${EMAIL_CONFIG.user}>`,
-            to:      recipientEmail,
-            subject: `Boarding Control — ${formData.flightInfo.flightNumber} — ${formData.flightInfo.date}`,
-            html:    buildHtmlBody(formData),
-            attachments: [{
-                filename:    pdfFilename,
-                content:     pdfBuffer,
-                contentType: 'application/pdf'
-            }]
-        });
+        const record = {
+            id: existingRecord ? existingRecord.id : `record-${Date.now()}`,
+            flightNumber: formData.flightInfo.flightNumber || 'N/A',
+            destination: destination,
+            date: date,
+            createdAt: existingRecord ? existingRecord.createdAt : new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            pdfFile: pdfFilename,
+            pdfUrl: `/records/${encodeURIComponent(pdfFilename)}`,
+            recipientEmail: recipientEmail,
+            formData: formData
+        };
 
-        console.log(`Email sent → ${recipientEmail} | Flight: ${formData.flightInfo.flightNumber}`);
-        res.json({ success: true });
+        if (existingRecord) {
+            const index = records.findIndex(item => item.id === existingRecord.id);
+            records[index] = record;
+        } else {
+            records.unshift(record);
+        }
+
+        saveRecords(records);
+
+        const emailConfigured = Boolean(EMAIL_CONFIG.user && EMAIL_CONFIG.pass);
+        if (!emailConfigured) {
+            console.log(`PDF saved locally → ${pdfFilename} | Flight: ${formData.flightInfo.flightNumber}`);
+            return res.json({
+                success: true,
+                savedLocally: true,
+                emailSent: false,
+                message: 'PDF saved to archive. SMTP is not configured, so no email was sent.',
+                record: record
+            });
+        }
+
+        // Send email, but do not fail the submission if SMTP credentials are invalid.
+        try {
+            const transporter = nodemailer.createTransport({
+                host:   EMAIL_CONFIG.smtpHost,
+                port:   EMAIL_CONFIG.smtpPort,
+                secure: EMAIL_CONFIG.secure,
+                auth:   { user: EMAIL_CONFIG.user, pass: EMAIL_CONFIG.pass },
+                tls: {
+                    rejectUnauthorized: !EMAIL_CONFIG.allowSelfSigned
+                }
+            });
+
+            await transporter.sendMail({
+                from:    `"${EMAIL_CONFIG.fromName}" <${EMAIL_CONFIG.user}>`,
+                to:      recipientEmail,
+                subject: `Boarding Control — ${formData.flightInfo.flightNumber} — ${formData.flightInfo.date}`,
+                html:    buildHtmlBody(formData),
+                attachments: [{
+                    filename:    pdfFilename,
+                    content:     pdfBuffer,
+                    contentType: 'application/pdf'
+                }]
+            });
+
+            console.log(`Email sent → ${recipientEmail} | Flight: ${formData.flightInfo.flightNumber}`);
+            return res.json({ success: true, savedLocally: true, emailSent: true, record: record });
+        } catch (mailError) {
+            console.error('Email send failed; archive record still saved:', mailError.message);
+            return res.json({
+                success: true,
+                savedLocally: true,
+                emailSent: false,
+                message: `PDF saved to archive. Email failed: ${mailError.message}`,
+                record: record
+            });
+        }
 
     } catch (error) {
         console.error('Submit error:', error);
@@ -417,4 +515,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`\nNorwegian BCF server → http://localhost:${PORT}`);
     console.log('Make sure SMTP_USER and SMTP_PASS are set, or update server.js\n');
+    console.log(`Archive page: http://localhost:${PORT}/records`);
 });

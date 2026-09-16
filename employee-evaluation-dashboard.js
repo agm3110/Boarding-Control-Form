@@ -1,363 +1,398 @@
-const form = document.querySelector('#evaluationForm');
-const saveState = document.querySelector('#saveState');
-const overallScore = document.querySelector('#overallScore');
-const scoreMeter = document.querySelector('#scoreMeter');
-const ratingStatus = document.querySelector('#ratingStatus');
-const ratingDescription = document.querySelector('#ratingDescription');
+const employeeStorageKey = 'employee-evaluation-dashboard-employee-flow';
+const homeView = document.querySelector('#homeView');
+const listView = document.querySelector('#employeeListView');
+const createView = document.querySelector('#employeeCreateView');
+const detailView = document.querySelector('#employeeDetailView');
+const navButtons = document.querySelectorAll('[data-view]');
 const employeeList = document.querySelector('#employeeList');
 const employeeCount = document.querySelector('#employeeCount');
-const employeeStorageKey = 'employee-evaluation-dashboard-profiles';
-const employeesListButton = document.querySelector('#employeesListButton');
-const evaluationViewButton = document.querySelector('#evaluationViewButton');
-const newEmployeeButton = document.querySelector('#newEmployeeButton');
-const employeesPanel = document.querySelector('#employeesPanel');
-const dashboardLayout = document.querySelector('#dashboardLayout');
-const profileDrawer = document.querySelector('#profileDrawer');
-const profileDrawerTitle = document.querySelector('#profileDrawerTitle');
-const profileDrawerScore = document.querySelector('#profileDrawerScore');
-const profileDrawerDetails = document.querySelector('#profileDrawerDetails');
-const loadProfileButton = document.querySelector('#loadProfileButton');
-const employeeModal = document.querySelector('#employeeModal');
+const saveState = document.querySelector('#saveState');
+const detailAvatar = document.querySelector('#detailAvatar');
+const detailName = document.querySelector('#detailName');
+const detailPosition = document.querySelector('#detailPosition');
+const detailMeta = document.querySelector('#detailMeta');
+const historyList = document.querySelector('#historyList');
+const historyCount = document.querySelector('#historyCount');
+const warningCount = document.querySelector('#warningCount');
+const lateCount = document.querySelector('#lateCount');
+const sickDaysCount = document.querySelector('#sickDaysCount');
+const evaluationAverage = document.querySelector('#evaluationAverage');
 const newEmployeeForm = document.querySelector('#newEmployeeForm');
 const newProfilePicture = document.querySelector('#newProfilePicture');
 const newPicturePreview = document.querySelector('#newPicturePreview');
-let selectedProfile = null;
+const historyModal = document.querySelector('#historyModal');
+const historyForm = document.querySelector('#historyForm');
+const addHistoryButton = document.querySelector('#addHistoryButton');
+const recordDetailsModal = document.querySelector('#recordDetailsModal');
+const recordDetailsTitle = document.querySelector('#recordDetailsTitle');
+const recordDetailsMeta = document.querySelector('#recordDetailsMeta');
+const recordDetailsBody = document.querySelector('#recordDetailsBody');
+const evaluationFields = document.querySelector('#evaluationFields');
+const historyType = document.querySelector('#historyType');
+const sicknessDaysField = document.querySelector('#sicknessDaysField');
+const sicknessDays = document.querySelector('#sicknessDays');
+const historySummary = document.querySelector('#historySummary');
+const historyDetails = document.querySelector('#historyDetails');
+let currentEmployeeId = null;
 let newPictureData = '';
 
-const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
-
-function numberValue(id) {
-    return Number(document.querySelector(`#${id}`).value) || 0;
+function readEmployees() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(employeeStorageKey)) || [];
+    return Array.isArray(saved) ? saved : [];
+  } catch (error) {
+    return [];
+  }
 }
 
-function averageScore(section) {
-    const inputs = document.querySelectorAll(`[data-score-section="${section}"] [data-score]`);
-    const values = [...inputs].map(input => clamp(Number(input.value) || 0, 0, 5));
-    const ratedValues = values.filter(value => value > 0);
-    return ratedValues.length ? ratedValues.reduce((sum, value) => sum + value, 0) / ratedValues.length : 0;
+function writeEmployees(employees) {
+  localStorage.setItem(employeeStorageKey, JSON.stringify(employees));
 }
 
-function percentage(numerator, denominator) {
-    if (!denominator) return 0;
-    return clamp((numerator / denominator) * 100, 0, 100);
+function getInitials(firstName, lastName) {
+  const first = (firstName || '').trim().charAt(0).toUpperCase();
+  const last = (lastName || '').trim().charAt(0).toUpperCase();
+  return first || last || 'E';
 }
 
-function ratingForScore(score) {
-    if (!score) return { label: 'Add ratings to begin', description: 'Complete the four sections to generate an evaluation status.' };
-    if (score >= 4.5) return { label: 'Excellent', description: 'A standout review. Recognize the impact and keep the momentum going.' };
-    if (score >= 3.5) return { label: 'Good', description: 'A solid review. Agree on one or two focused areas to build on.' };
-    if (score >= 2.5) return { label: 'Needs Improvement', description: 'Set clear support, actions, and a follow-up date for progress.' };
-    return { label: 'Unsatisfactory', description: 'Document the support plan and next steps with care and specificity.' };
+function setView(viewName) {
+  const views = {
+    home: homeView,
+    list: listView,
+    create: createView,
+    profile: detailView
+  };
+
+  Object.entries(views).forEach(([name, view]) => {
+    view.classList.toggle('active', name === viewName);
+  });
+
+  navButtons.forEach(button => {
+    button.classList.toggle('active', button.dataset.view === viewName);
+  });
 }
 
-function updateResults() {
-    const competence = averageScore('competence');
-    const compliance = averageScore('compliance');
-    const attendance = percentage(numberValue('daysPresent'), numberValue('workingDays'));
-    const punctuality = percentage(numberValue('onTimeArrivals'), numberValue('scheduledShifts'));
-    const sections = [competence, compliance, attendance / 20, punctuality / 20].filter(value => value > 0);
-    const overall = sections.length ? sections.reduce((sum, value) => sum + value, 0) / sections.length : 0;
-    const rating = ratingForScore(overall);
+function renderEmployeeList() {
+  const employees = readEmployees();
+  employeeCount.textContent = `${employees.length} saved`;
+  employeeList.innerHTML = '';
 
-    document.querySelector('[data-section-score="competence"]').textContent = `${competence.toFixed(1)} / 5`;
-    document.querySelector('[data-section-score="compliance"]').textContent = `${compliance.toFixed(1)} / 5`;
-    document.querySelector('[data-section-score="attendance"]').textContent = `${attendance.toFixed(0)}%`;
-    document.querySelector('[data-section-score="punctuality"]').textContent = `${punctuality.toFixed(0)}%`;
-    document.querySelector('#competenceResult').textContent = competence.toFixed(1);
-    document.querySelector('#complianceResult').textContent = compliance.toFixed(1);
-    document.querySelector('#attendanceResult').textContent = `${attendance.toFixed(0)}%`;
-    document.querySelector('#punctualityResult').textContent = `${punctuality.toFixed(0)}%`;
-    overallScore.textContent = overall.toFixed(1);
-    scoreMeter.style.width = `${(overall / 5) * 100}%`;
-    ratingStatus.textContent = rating.label;
-    ratingDescription.textContent = rating.description;
+  if (!employees.length) {
+    employeeList.innerHTML = '<p class="empty-state">No employees created yet.</p>';
+    return;
+  }
+
+  employees.forEach(employee => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'employee-card';
+    card.addEventListener('click', () => openEmployeeDetail(employee.id));
+
+    const historyRecords = employee.history || [];
+    const alertCount = historyRecords.filter(entry => entry.type.includes('warning')).length;
+
+    card.innerHTML = `
+      <div class="employee-card-main">
+        <div class="employee-avatar">${getInitials(employee.firstName, employee.lastName)}</div>
+        <div class="employee-card-info">
+          <strong>${employee.firstName} ${employee.lastName}</strong>
+          <span>${employee.position || 'Position not provided'}</span>
+          <small>${employee.employeeId || 'No employee ID'}</small>
+        </div>
+      </div>
+      <div class="employee-pill">${alertCount} alert${alertCount === 1 ? '' : 's'}</div>
+    `;
+
+    employeeList.append(card);
+  });
 }
 
-function markChanged() {
-    saveState.textContent = 'Unsaved changes';
-    updateResults();
+function getCurrentEmployee() {
+  const employees = readEmployees();
+  return employees.find(employee => employee.id === currentEmployeeId) || null;
 }
 
-function readProfiles() {
-    try {
-        return JSON.parse(localStorage.getItem(employeeStorageKey)) || [];
-    } catch {
-        return [];
-    }
+function getRecordPresentation(type) {
+  const presentations = {
+    Evaluation: { className: 'record-evaluation', icon: '&#9733;' },
+    'Meeting with employee': { className: 'record-meeting', icon: '&#128172;' },
+    Sickness: { className: 'record-sickness', icon: '&#10010;' },
+    'Verbal warning': { className: 'record-verbal-warning', icon: '&#9888;' },
+    'Written warning': { className: 'record-written-warning', icon: '&#9888;' },
+    Mistake: { className: 'record-mistake', icon: '&#10006;' },
+    'Problems with colleagues': { className: 'record-colleagues', icon: '&#8646;' },
+    'Personal problems at work': { className: 'record-personal', icon: '&#9673;' },
+    'Arrived late': { className: 'record-late', icon: '&#8987;' },
+    'Left before work was finished': { className: 'record-early-leave', icon: '&#8599;' }
+  };
+
+  return presentations[type] || { className: 'record-default', icon: '&#8226;' };
 }
 
-function fieldValue(id) {
-    return document.querySelector(`#${id}`)?.value.trim() || '';
+function renderEmployeeDetail() {
+  const employee = getCurrentEmployee();
+  if (!employee) {
+    setView('list');
+    return;
+  }
+
+  const history = employee.history || [];
+  const warningTotal = history.filter(record => /warning/i.test(record.type)).length;
+  const lateTotal = history.filter(record => record.type === 'Arrived late').length;
+  const currentYear = String(new Date().getFullYear());
+  const sickDaysTotal = history
+    .filter(record => record.type === 'Sickness' && record.date?.slice(0, 4) === currentYear)
+    .reduce((total, record) => total + Number(record.sickDays || 0), 0);
+  const evaluationScores = history
+    .filter(record => record.type === 'Evaluation' && record.evaluation?.overallScore)
+    .map(record => Number(record.evaluation.overallScore))
+    .filter(score => Number.isFinite(score));
+  const averageEvaluation = evaluationScores.length
+    ? (evaluationScores.reduce((total, score) => total + score, 0) / evaluationScores.length).toFixed(1)
+    : '-';
+
+  detailAvatar.textContent = getInitials(employee.firstName, employee.lastName);
+  detailName.textContent = `${employee.firstName} ${employee.lastName}`;
+  detailPosition.textContent = employee.position || 'Position not provided';
+  historyCount.textContent = String(history.length);
+  warningCount.textContent = String(warningTotal);
+  lateCount.textContent = String(lateTotal);
+  sickDaysCount.textContent = String(sickDaysTotal);
+  evaluationAverage.textContent = averageEvaluation;
+
+  detailMeta.innerHTML = `
+    <div class="meta-item"><span>Employee ID</span><strong>${employee.employeeId || 'Not provided'}</strong></div>
+    <div class="meta-item"><span>Position</span><strong>${employee.position || 'Not provided'}</strong></div>
+    <div class="meta-item"><span>Work email</span><strong>${employee.email || 'Not provided'}</strong></div>
+    <div class="meta-item"><span>Work phone</span><strong>${employee.phone || 'Not provided'}</strong></div>
+    <div class="meta-item"><span>Date of commencement</span><strong>${employee.startDate || 'Not provided'}</strong></div>
+    <div class="meta-item"><span>Profile status</span><strong>${history.length ? 'History available' : 'No records yet'}</strong></div>
+  `;
+
+  if (!history.length) {
+    historyList.innerHTML = '<p class="empty-state">No employee history yet. Add the first record to begin.</p>';
+    return;
+  }
+
+  historyList.innerHTML = history.map(record => {
+    const presentation = getRecordPresentation(record.type);
+    const warningClass = /warning/i.test(record.type) ? 'warning' : '';
+    return `
+      <article class="history-item ${presentation.className} ${warningClass}" role="button" tabindex="0" data-record-id="${record.id}">
+        <div class="history-item-header">
+          <div class="history-type-group">
+            <span class="record-icon" aria-hidden="true">${presentation.icon}</span>
+            <span class="history-type">${record.type}</span>
+          </div>
+          <span class="history-date">${record.date}</span>
+        </div>
+        <p class="history-summary">${record.summary}</p>
+      </article>
+    `;
+  }).join('');
 }
 
-function formData() {
-    return {
-        employeeName: fieldValue('employeeName'),
-        employeeId: fieldValue('employeeId'),
-        department: fieldValue('department'),
-        position: fieldValue('position'),
-        evaluationPeriod: fieldValue('evaluationPeriod'),
-        evaluator: fieldValue('evaluator'),
-        workingDays: fieldValue('workingDays'),
-        daysPresent: fieldValue('daysPresent'),
-        approvedAbsence: fieldValue('approvedAbsence'),
-        unapprovedAbsence: fieldValue('unapprovedAbsence'),
-        sickDays: fieldValue('sickDays'),
-        scheduledShifts: fieldValue('scheduledShifts'),
-        onTimeArrivals: fieldValue('onTimeArrivals'),
-        lateArrivals: fieldValue('lateArrivals'),
-        minutesLate: fieldValue('minutesLate'),
-        notes: fieldValue('notes'),
-        scores: [...document.querySelectorAll('[data-score]')].map(input => input.value),
-        qualifications: [...document.querySelectorAll('[data-qualification-status]')].map(status => ({
-            name: status.dataset.qualificationStatus,
-            status: status.value,
-            rate: document.querySelector(`[data-qualification-rate="${status.dataset.qualificationStatus}"]`).value
-        }))
-    };
+function closeRecordDetails() {
+  recordDetailsModal.classList.add('hidden');
 }
 
-function applyFormData(data) {
-    Object.entries(data).forEach(([id, value]) => {
-        const input = document.querySelector(`#${id}`);
-        if (input && typeof value === 'string') input.value = value;
-    });
-    document.querySelectorAll('[data-score]').forEach((input, index) => { input.value = data.scores?.[index] || 0; });
-    data.qualifications?.forEach(qualification => {
-        const status = document.querySelector(`[data-qualification-status="${qualification.name}"]`);
-        const rate = document.querySelector(`[data-qualification-rate="${qualification.name}"]`);
-        if (status && rate) {
-            status.value = qualification.status;
-            rate.value = qualification.rate;
-            syncQualificationRate(status);
-        }
-    });
-    updateResults();
-    saveState.textContent = `Loaded ${data.employeeName || 'employee'}`;
+function openRecordDetails(recordId) {
+  const employee = getCurrentEmployee();
+  const record = employee?.history?.find(item => item.id === recordId);
+  if (!record) return;
+
+  recordDetailsModal.classList.remove('hidden');
+  recordDetailsTitle.textContent = record.type;
+  recordDetailsMeta.innerHTML = `
+    <div class="meta-item"><span>Type of record</span><strong>${record.type}</strong></div>
+    <div class="meta-item"><span>Date</span><strong>${record.date}</strong></div>
+    <div class="meta-item"><span>Short summary</span><strong>${record.summary}</strong></div>
+  `;
+  recordDetailsBody.textContent = record.details || 'No additional details provided.';
 }
 
-function profileDetail(label, value) {
-    const detail = document.createElement('div');
-    const labelElement = document.createElement('span');
-    labelElement.textContent = label;
-    const valueElement = document.createElement('strong');
-    valueElement.textContent = value || 'Not provided';
-    detail.append(labelElement, valueElement);
-    return detail;
+function openEmployeeDetail(employeeId) {
+  currentEmployeeId = employeeId;
+  setView('profile');
+  renderEmployeeDetail();
+  saveState.textContent = 'Employee profile open';
 }
 
-function openProfile(profile) {
-    selectedProfile = profile;
-    const data = profile.data;
-    profileDrawerTitle.textContent = profile.employeeName || 'Unnamed employee';
-    profileDrawerScore.innerHTML = `${profile.score.toFixed(1)} <small>/ 5</small>`;
-    profileDrawerDetails.replaceChildren();
-
-    const employeeGroup = document.createElement('section');
-    employeeGroup.className = 'profile-detail-group';
-    const employeeHeading = document.createElement('h3');
-    employeeHeading.textContent = 'Employee information';
-    const employeeGrid = document.createElement('div');
-    employeeGrid.className = 'profile-detail-grid';
-    employeeGrid.append(
-        profileDetail('First name', data.firstName || data.employeeName?.split(' ')[0]),
-        profileDetail('Last name', data.lastName || data.employeeName?.split(' ').slice(1).join(' ')),
-        profileDetail('Employee ID', data.employeeId),
-        profileDetail('Work email', data.workEmail),
-        profileDetail('Work phone', data.workPhone),
-        profileDetail('Department', data.department),
-        profileDetail('Position title', data.position || data.positionTitle),
-        profileDetail('Commencement date', data.commencementDate),
-        profileDetail('Evaluation period', data.evaluationPeriod),
-        profileDetail('Evaluator', data.evaluator)
-    );
-    employeeGroup.append(employeeHeading, employeeGrid);
-    if (data.photo) {
-        const photo = document.createElement('img');
-        photo.className = 'profile-photo';
-        photo.src = data.photo;
-        photo.alt = `${profile.employeeName || 'Employee'} profile picture`;
-        employeeGroup.prepend(photo);
-    }
-    profileDrawerDetails.append(employeeGroup);
-
-    const qualificationGroup = document.createElement('section');
-    qualificationGroup.className = 'profile-detail-group';
-    const qualificationHeading = document.createElement('h3');
-    qualificationHeading.textContent = 'Job qualifications';
-    const qualificationLabels = { 'check-in': 'Check-in', 'gate-support': 'Gate Support', 'gate-agent': 'Gate Agent', 'service-desk': 'Service Desk', arrival: 'Arrival', ops: 'Ops' };
-    data.qualifications?.forEach(qualification => {
-        const row = document.createElement('div');
-        row.className = 'profile-qualification';
-        const name = document.createElement('span');
-        name.textContent = qualificationLabels[qualification.name] || qualification.name;
-        const result = document.createElement('strong');
-        result.textContent = qualification.status === 'yes' ? `Yes, ${qualification.rate || '-'} / 5` : 'No';
-        row.append(name, result);
-        qualificationGroup.append(row);
-    });
-    qualificationGroup.prepend(qualificationHeading);
-    profileDrawerDetails.append(qualificationGroup);
-
-    const notesGroup = document.createElement('section');
-    notesGroup.className = 'profile-detail-group';
-    const notesHeading = document.createElement('h3');
-    notesHeading.textContent = 'Evaluator notes';
-    const notes = document.createElement('p');
-    notes.className = 'profile-notes';
-    notes.textContent = data.notes || 'No notes saved.';
-    notesGroup.append(notesHeading, notes);
-    profileDrawerDetails.append(notesGroup);
-    profileDrawer.hidden = false;
+function updateHistoryTypeFields() {
+  const isEvaluation = historyType.value === 'Evaluation';
+  const isSickness = historyType.value === 'Sickness';
+  evaluationFields.hidden = !isEvaluation;
+  sicknessDaysField.hidden = !isSickness;
+  sicknessDays.required = isSickness;
+  historySummary.required = !isEvaluation;
+  historyDetails.required = !isEvaluation;
+  evaluationFields.querySelectorAll('select, textarea').forEach(field => {
+    field.required = isEvaluation;
+  });
 }
 
-function closeProfile() {
-    profileDrawer.hidden = true;
-    selectedProfile = null;
+function closeHistoryModal() {
+  historyModal.classList.add('hidden');
+  historyForm.reset();
+  document.querySelector('#historyDate').value = new Date().toISOString().split('T')[0];
+  updateHistoryTypeFields();
 }
 
-function renderProfiles() {
-    const profiles = readProfiles();
-    employeeCount.textContent = `${profiles.length} saved`;
-    employeeList.replaceChildren();
-    if (!profiles.length) {
-        const emptyState = document.createElement('p');
-        emptyState.className = 'empty-employees';
-        emptyState.textContent = 'No saved employees yet.';
-        employeeList.append(emptyState);
-        return;
-    }
-    profiles.forEach(profile => {
-        const card = document.createElement('button');
-        card.className = 'employee-card';
-        card.type = 'button';
-        card.innerHTML = `<span><strong></strong><small class="employee-position"></small><small>${profile.employeeId || 'Employee profile'}</small></span><b class="employee-score">${Number(profile.score || 0).toFixed(1)}</b>`;
-        card.querySelector('strong').textContent = profile.employeeName || 'Unnamed employee';
-        card.querySelector('.employee-position').textContent = profile.data?.position || profile.data?.positionTitle || 'Position not provided';
-        card.addEventListener('click', () => openProfile(profile));
-        employeeList.append(card);
-    });
+function openHistoryModal() {
+  if (!currentEmployeeId) return;
+  historyModal.classList.remove('hidden');
+  document.querySelector('#historyDate').value = new Date().toISOString().split('T')[0];
+  updateHistoryTypeFields();
+  document.querySelector('#historyType').focus();
 }
 
-function openNewEmployeeModal() {
-    newEmployeeForm.reset();
-    newPictureData = '';
-    newPicturePreview.hidden = true;
-    employeeModal.hidden = false;
-    document.querySelector('#newFirstName').focus();
-}
+newEmployeeForm.addEventListener('submit', event => {
+  event.preventDefault();
 
-function closeNewEmployeeModal() {
-    employeeModal.hidden = true;
-}
+  const firstName = document.querySelector('#newFirstName').value.trim();
+  const lastName = document.querySelector('#newLastName').value.trim();
+  const employeeId = document.querySelector('#newEmployeeId').value.trim();
+  const position = document.querySelector('#newPositionTitle').value.trim();
+  const email = document.querySelector('#newWorkEmail').value.trim();
+  const phone = document.querySelector('#newWorkPhone').value.trim();
+  const startDate = document.querySelector('#newCommencementDate').value;
 
-function syncQualificationRate(statusSelect) {
-    const qualification = statusSelect.dataset.qualificationStatus;
-    const rateInput = document.querySelector(`[data-qualification-rate="${qualification}"]`);
-    const canRate = statusSelect.value === 'yes';
-    rateInput.disabled = !canRate;
-    if (!canRate) rateInput.value = '';
-}
+  const employee = {
+    id: employeeId || `emp-${Date.now()}`,
+    firstName,
+    lastName,
+    employeeId,
+    position,
+    email,
+    phone,
+    startDate,
+    photo: newPictureData || '',
+    history: []
+  };
 
-document.querySelectorAll('input, select, textarea').forEach(input => {
-    input.addEventListener('input', markChanged);
-    input.addEventListener('change', markChanged);
-});
+  const employees = readEmployees();
+  const existingIndex = employees.findIndex(item => item.id === employee.id || (item.employeeId && item.employeeId.toLowerCase() === employeeId.toLowerCase()));
 
-document.querySelectorAll('[data-qualification-status]').forEach(statusSelect => {
-    statusSelect.addEventListener('change', () => syncQualificationRate(statusSelect));
-    syncQualificationRate(statusSelect);
-});
+  if (existingIndex >= 0) {
+    employees[existingIndex] = { ...employees[existingIndex], ...employee };
+  } else {
+    employees.unshift(employee);
+  }
 
-function resetEvaluation() {
-    form.reset();
-    document.querySelectorAll('[data-score]').forEach(input => { input.value = 0; });
-    document.querySelectorAll('[data-attendance], [data-punctuality]').forEach(input => { input.value = 0; });
-    document.querySelectorAll('[data-qualification-status]').forEach(syncQualificationRate);
-    saveState.textContent = 'Ready to review';
-    updateResults();
-}
-
-form.addEventListener('submit', event => {
-    event.preventDefault();
-    const data = formData();
-    const profiles = readProfiles();
-    const profileKey = data.employeeId.toLowerCase() || data.employeeName.toLowerCase();
-    const profile = { id: profileKey || `profile-${Date.now()}`, employeeName: data.employeeName, employeeId: data.employeeId, score: Number(overallScore.textContent), data };
-    const existingIndex = profiles.findIndex(item => item.id === profile.id);
-    if (existingIndex >= 0) profiles[existingIndex] = profile;
-    else profiles.unshift(profile);
-    localStorage.setItem(employeeStorageKey, JSON.stringify(profiles));
-    renderProfiles();
-    updateResults();
-    saveState.textContent = `Saved ${data.employeeName || 'employee'} at ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-});
-
-document.querySelector('#resetButton').addEventListener('click', resetEvaluation);
-employeesListButton.addEventListener('click', () => {
-    dashboardLayout.classList.add('employees-list-view');
-    employeesPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-});
-evaluationViewButton.addEventListener('click', () => {
-    dashboardLayout.classList.remove('employees-list-view');
-    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-});
-newEmployeeButton.addEventListener('click', () => {
-    openNewEmployeeModal();
-});
-document.querySelectorAll('[data-close-profile]').forEach(button => button.addEventListener('click', closeProfile));
-loadProfileButton.addEventListener('click', () => {
-    if (!selectedProfile) return;
-    applyFormData(selectedProfile.data);
-    closeProfile();
-});
-document.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && !profileDrawer.hidden) closeProfile();
-    if (event.key === 'Escape' && !employeeModal.hidden) closeNewEmployeeModal();
+  writeEmployees(employees);
+  renderEmployeeList();
+  newEmployeeForm.reset();
+  newPictureData = '';
+  newPicturePreview.hidden = true;
+  saveState.textContent = `${firstName} ${lastName} created`;
+  openEmployeeDetail(employee.id);
 });
 
 newProfilePicture.addEventListener('change', () => {
-    const file = newProfilePicture.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.addEventListener('load', () => {
-        newPictureData = reader.result;
-        newPicturePreview.src = newPictureData;
-        newPicturePreview.hidden = false;
-    });
-    reader.readAsDataURL(file);
+  const file = newProfilePicture.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = event => {
+    newPictureData = event.target.result;
+    newPicturePreview.src = newPictureData;
+    newPicturePreview.hidden = false;
+  };
+  reader.readAsDataURL(file);
 });
 
-document.querySelectorAll('[data-close-employee-modal]').forEach(button => button.addEventListener('click', closeNewEmployeeModal));
-newEmployeeForm.addEventListener('submit', event => {
-    event.preventDefault();
-    const firstName = document.querySelector('#newFirstName').value.trim();
-    const lastName = document.querySelector('#newLastName').value.trim();
-    const employeeId = document.querySelector('#newEmployeeId').value.trim();
-    const data = {
-        employeeName: `${firstName} ${lastName}`.trim(),
-        firstName,
-        lastName,
-        employeeId,
-        workEmail: document.querySelector('#newWorkEmail').value.trim(),
-        workPhone: document.querySelector('#newWorkPhone').value.trim(),
-        position: document.querySelector('#newPositionTitle').value.trim(),
-        commencementDate: document.querySelector('#newCommencementDate').value,
-        photo: newPictureData,
-        evaluationPeriod: '2025',
-        scores: [...document.querySelectorAll('[data-score]')].map(() => '0'),
-        qualifications: []
-    };
-    const profiles = readProfiles();
-    const profile = { id: employeeId.toLowerCase(), employeeName: data.employeeName, employeeId, score: 0, data };
-    const existingIndex = profiles.findIndex(item => item.id === profile.id);
-    if (existingIndex >= 0) profiles[existingIndex] = { ...profiles[existingIndex], ...profile };
-    else profiles.unshift(profile);
-    localStorage.setItem(employeeStorageKey, JSON.stringify(profiles));
-    renderProfiles();
-    closeNewEmployeeModal();
-    saveState.textContent = `Created ${data.employeeName}`;
+navButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const viewName = button.dataset.view;
+    currentEmployeeId = null;
+    setView(viewName);
+    if (viewName === 'list') renderEmployeeList();
+    saveState.textContent = viewName === 'home' ? 'Ready' : `${button.textContent} open`;
+  });
 });
 
-updateResults();
-renderProfiles();
+addHistoryButton.addEventListener('click', openHistoryModal);
+
+historyList.addEventListener('click', event => {
+  const recordItem = event.target.closest('[data-record-id]');
+  if (recordItem) openRecordDetails(recordItem.dataset.recordId);
+});
+
+historyList.addEventListener('keydown', event => {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  const recordItem = event.target.closest('[data-record-id]');
+  if (!recordItem) return;
+  event.preventDefault();
+  openRecordDetails(recordItem.dataset.recordId);
+});
+
+historyType.addEventListener('change', updateHistoryTypeFields);
+
+document.querySelectorAll('[data-close-history]').forEach(button => {
+  button.addEventListener('click', closeHistoryModal);
+});
+
+document.querySelectorAll('[data-close-record-details]').forEach(button => {
+  button.addEventListener('click', closeRecordDetails);
+});
+
+historyForm.addEventListener('submit', event => {
+  event.preventDefault();
+  const employee = getCurrentEmployee();
+  if (!employee) return;
+
+  const isEvaluation = historyType.value === 'Evaluation';
+  const sickDays = historyType.value === 'Sickness' ? Number(sicknessDays.value) : 0;
+  const scoreFields = {
+    quality: document.querySelector('#evaluationQuality').value,
+    productivity: document.querySelector('#evaluationProductivity').value,
+    reliability: document.querySelector('#evaluationReliability').value,
+    teamwork: document.querySelector('#evaluationTeamwork').value,
+    communication: document.querySelector('#evaluationCommunication').value,
+    growth: document.querySelector('#evaluationGrowth').value
+  };
+  const scoreValues = Object.values(scoreFields).map(Number);
+  const overallScore = isEvaluation ? (scoreValues.reduce((total, score) => total + score, 0) / scoreValues.length).toFixed(1) : '';
+  const evaluation = isEvaluation ? {
+    scores: scoreFields,
+    overallScore,
+    goals: document.querySelector('#evaluationGoals').value.trim(),
+    comments: document.querySelector('#evaluationComments').value.trim()
+  } : null;
+
+  const record = {
+    id: `record-${Date.now()}`,
+    type: historyType.value,
+    date: document.querySelector('#historyDate').value,
+    summary: isEvaluation ? `Performance evaluation - overall rating ${overallScore}/5` : historySummary.value.trim(),
+    details: isEvaluation ? `${evaluation.comments}\n\nGoals and follow-up:\n${evaluation.goals}` : historyDetails.value.trim(),
+    evaluation,
+    sickDays
+  };
+
+  const employees = readEmployees();
+  const index = employees.findIndex(item => item.id === employee.id);
+
+  if (index >= 0) {
+    employees[index].history = [record, ...(employees[index].history || [])];
+    writeEmployees(employees);
+    renderEmployeeList();
+    renderEmployeeDetail();
+    saveState.textContent = `${record.type} saved`;
+  }
+
+  closeHistoryModal();
+});
+
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !historyModal.classList.contains('hidden')) {
+    closeHistoryModal();
+  }
+  if (event.key === 'Escape' && !recordDetailsModal.classList.contains('hidden')) {
+    closeRecordDetails();
+  }
+});
+
+renderEmployeeList();
+setView('home');
+document.querySelector('#historyDate').value = new Date().toISOString().split('T')[0];

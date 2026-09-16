@@ -1,281 +1,346 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="Employee evaluation dashboard for structured performance reviews.">
-	<title>Employee Evaluation Dashboard</title>
-	<link rel="stylesheet" href="employee-evaluation-dashboard.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Employee management dashboard with employee creation, profile pages, and employee history tracking.">
+  <title>Employee Evaluation Dashboard</title>
+  <link rel="stylesheet" href="employee-evaluation-dashboard.css">
 </head>
 <body>
-	<main class="app-shell">
-		<header class="topbar">
-			<a class="brand" href="#top" aria-label="Employee Evaluation Dashboard home">
-				<span class="brand-mark">EE</span>
-				<span>
-					<strong>People Operations</strong>
-					<small>Review workspace</small>
-				</span>
-			</a>
-			<div class="topbar-actions">
-				<span class="save-state" id="saveState" aria-live="polite">Ready to review</span>
-				<button class="button button-ghost" id="evaluationViewButton" type="button">Employee evaluation</button>
-				<button class="button button-ghost" id="employeesListButton" type="button">Employees list</button>
-				<button class="button button-primary" id="newEmployeeButton" type="button">New employee</button>
-			</div>
-		</header>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="brand" aria-label="Employee dashboard home">
+        <span class="brand-mark">EE</span>
+        <span>
+          <strong>People Operations</strong>
+          <small>Employee workspace</small>
+        </span>
+      </div>
+      <div class="topbar-actions">
+        <span class="save-state" id="saveState" aria-live="polite">Ready</span>
+      </div>
+    </header>
 
-		<section class="intro" id="top">
-			<div>
-				<p class="eyebrow">Performance review / 2025</p>
-				<h1>Employee Evaluation</h1>
-				<p class="intro-copy">A clear, balanced view of performance, reliability, and growth opportunities.</p>
-			</div>
-			<div class="review-badge">
-				<span class="status-dot"></span>
-				<span>Draft evaluation</span>
-			</div>
-		</section>
+    <nav class="main-nav" aria-label="Main navigation">
+      <button class="nav-button active" type="button" data-view="home">Home</button>
+      <button class="nav-button" type="button" data-view="list">Employees list</button>
+      <button class="nav-button" type="button" data-view="create">Create employee</button>
+    </nav>
 
-		<div class="dashboard-layout" id="dashboardLayout">
-		<form id="evaluationForm">
-			<div class="content-layout">
-				<div class="evaluation-sections">
-					<section class="panel score-panel" aria-labelledby="competence-heading">
-						<div class="panel-heading">
-							<div>
-								<span class="section-number">01</span>
-								<h2 id="competence-heading">Competence &amp; Performance</h2>
-							</div>
-							<output class="section-score" data-section-score="competence">0.0 / 5</output>
-						</div>
-						<p class="panel-description">How consistently does this person apply their expertise and create useful outcomes?</p>
-						<div class="rating-list" data-score-section="competence">
-							<label class="rating-row">Job knowledge <span class="rating-hint">Expertise in role</span><input class="rating-input" type="number" min="0" max="5" step="0.5" value="0" data-score></label>
-							<label class="rating-row">Technical skills <span class="rating-hint">Tools and methods</span><input class="rating-input" type="number" min="0" max="5" step="0.5" value="0" data-score></label>
-							<label class="rating-row">Quality of work <span class="rating-hint">Accuracy and craft</span><input class="rating-input" type="number" min="0" max="5" step="0.5" value="0" data-score></label>
-							<label class="rating-row">Productivity <span class="rating-hint">Pace and ownership</span><input class="rating-input" type="number" min="0" max="5" step="0.5" value="0" data-score></label>
-							<label class="rating-row">Communication <span class="rating-hint">Clarity and listening</span><input class="rating-input" type="number" min="0" max="5" step="0.5" value="0" data-score></label>
-							<label class="rating-row">Teamwork <span class="rating-hint">Collaboration and trust</span><input class="rating-input" type="number" min="0" max="5" step="0.5" value="0" data-score></label>
-							<label class="rating-row">Problem solving <span class="rating-hint">Judgement under pressure</span><input class="rating-input" type="number" min="0" max="5" step="0.5" value="0" data-score></label>
-						</div>
-					</section>
+    <section class="view-panel active" id="homeView">
+      <div class="page-header home-header">
+        <p class="eyebrow">People operations</p>
+        <h1>Employee workspace</h1>
+        <p class="home-intro">Keep employee information and workplace history organized in one clear place.</p>
+      </div>
+      <div class="home-actions">
+        <button class="panel home-action" type="button" data-view="create">
+          <span class="eyebrow">Start here</span>
+          <strong>Create employee</strong>
+          <span>Add a new employee profile to your workspace.</span>
+        </button>
+        <button class="panel home-action" type="button" data-view="list">
+          <span class="eyebrow">Workspace</span>
+          <strong>Employees list</strong>
+          <span>Open employee profiles and review their history.</span>
+        </button>
+      </div>
+    </section>
 
-					<section class="panel score-panel" aria-labelledby="compliance-heading">
-						<div class="panel-heading">
-							<div>
-								<span class="section-number">02</span>
-								<h2 id="compliance-heading">Company Policy Compliance</h2>
-							</div>
-							<output class="section-score" data-section-score="compliance">0.0 / 5</output>
-						</div>
-						<p class="panel-description">How reliably does this person protect the standards, people, and information around them?</p>
-						<div class="rating-list" data-score-section="compliance">
-							<label class="rating-row">Follows company procedures <span class="rating-hint">Reliable process</span><input class="rating-input" type="number" min="0" max="5" step="0.5" value="0" data-score></label>
-							<label class="rating-row">Safety compliance <span class="rating-hint">Safe working habits</span><input class="rating-input" type="number" min="0" max="5" step="0.5" value="0" data-score></label>
-							<label class="rating-row">Security compliance <span class="rating-hint">Protects access and assets</span><input class="rating-input" type="number" min="0" max="5" step="0.5" value="0" data-score></label>
-							<label class="rating-row">Professional conduct <span class="rating-hint">Respectful and accountable</span><input class="rating-input" type="number" min="0" max="5" step="0.5" value="0" data-score></label>
-							<label class="rating-row">Data/privacy compliance <span class="rating-hint">Handles data responsibly</span><input class="rating-input" type="number" min="0" max="5" step="0.5" value="0" data-score></label>
-						</div>
-					</section>
+    <section class="view-panel" id="employeeListView">
+      <div class="page-header">
+        <p class="eyebrow">Employees</p>
+        <h1>Employees list</h1>
+      </div>
 
-					<section class="panel metric-panel" aria-labelledby="attendance-heading">
-						<div class="panel-heading">
-							<div><span class="section-number">03</span><h2 id="attendance-heading">Attendance</h2></div>
-							<output class="section-score" data-section-score="attendance">0%</output>
-						</div>
-						<p class="panel-description">Record the period totals to calculate attendance automatically.</p>
-						<div class="metrics-grid">
-							<label class="field">Working days<input id="workingDays" type="number" min="0" value="0" data-attendance></label>
-							<label class="field">Days present<input id="daysPresent" type="number" min="0" value="0" data-attendance></label>
-							<label class="field">Approved absence<input id="approvedAbsence" type="number" min="0" value="0" data-attendance></label>
-							<label class="field">Unapproved absence<input id="unapprovedAbsence" type="number" min="0" value="0" data-attendance></label>
-							<label class="field">Sick days<input id="sickDays" type="number" min="0" value="0" data-attendance></label>
-						</div>
-					</section>
+      <section class="panel employee-list-panel employee-list-page-panel">
+        <div class="panel-header">
+          <h2>All employees</h2>
+          <span id="employeeCount">0 saved</span>
+        </div>
+        <div class="employee-list" id="employeeList" aria-live="polite">
+          <p class="empty-state">No employees created yet.</p>
+        </div>
+      </section>
+    </section>
 
-					<section class="panel metric-panel" aria-labelledby="punctuality-heading">
-						<div class="panel-heading">
-							<div><span class="section-number">04</span><h2 id="punctuality-heading">Punctuality</h2></div>
-							<output class="section-score" data-section-score="punctuality">0%</output>
-						</div>
-						<p class="panel-description">Compare scheduled shifts with actual arrivals to measure reliability.</p>
-						<div class="metrics-grid">
-							<label class="field">Scheduled shifts<input id="scheduledShifts" type="number" min="0" value="0" data-punctuality></label>
-							<label class="field">On-time arrivals<input id="onTimeArrivals" type="number" min="0" value="0" data-punctuality></label>
-							<label class="field">Late arrivals<input id="lateArrivals" type="number" min="0" value="0" data-punctuality></label>
-							<label class="field">Total minutes late<input id="minutesLate" type="number" min="0" value="0" data-punctuality></label>
-						</div>
-					</section>
-				</div>
+    <section class="view-panel" id="employeeCreateView">
+      <div class="page-header">
+        <div>
+          <p class="eyebrow">Employee setup</p>
+          <h1>Create employee</h1>
+        </div>
+      </div>
 
-				<aside class="results-panel" aria-labelledby="results-heading">
-					<div class="results-topline"><span>Overall result</span><span class="live-label"><span class="pulse"></span>Live</span></div>
-					<h2 id="results-heading">Evaluation score</h2>
-					<div class="overall-score"><span id="overallScore">0.0</span><small>/ 5</small></div>
-					<div class="score-meter"><span id="scoreMeter"></span></div>
-					<div class="rating-status" id="ratingStatus">Add ratings to begin</div>
-					<p class="rating-description" id="ratingDescription">Complete the four sections to generate an evaluation status.</p>
-					<div class="result-breakdown">
-						<div><span>Competence</span><strong id="competenceResult">0.0</strong></div>
-						<div><span>Compliance</span><strong id="complianceResult">0.0</strong></div>
-						<div><span>Attendance</span><strong id="attendanceResult">0%</strong></div>
-						<div><span>Punctuality</span><strong id="punctualityResult">0%</strong></div>
-					</div>
-					<div class="rating-scale" aria-label="Rating scale"><span>1</span><span>Unsatisfactory</span><span>Needs improvement</span><span>Good</span><span>Excellent</span><span>5</span></div>
-				</aside>
-			</div>
+      <section class="panel create-panel create-page-panel">
+          <div class="panel-header">
+            <h2>Employee details</h2>
+          </div>
+          <form id="newEmployeeForm" class="employee-form">
+            <div class="form-grid two-column">
+              <label class="field">
+                <span>First name</span>
+                <input id="newFirstName" type="text" required>
+              </label>
+              <label class="field">
+                <span>Last name</span>
+                <input id="newLastName" type="text" required>
+              </label>
+              <label class="field">
+                <span>Employee ID</span>
+                <input id="newEmployeeId" type="text" required>
+              </label>
+              <label class="field">
+                <span>Position</span>
+                <input id="newPositionTitle" type="text" required>
+              </label>
+              <label class="field">
+                <span>Work email</span>
+                <input id="newWorkEmail" type="email" required>
+              </label>
+              <label class="field">
+                <span>Work phone</span>
+                <input id="newWorkPhone" type="tel" required>
+              </label>
+              <label class="field full-width">
+                <span>Date of commencement</span>
+                <input id="newCommencementDate" type="date" required>
+              </label>
+              <label class="field full-width photo-field">
+                <span>Profile picture</span>
+                <input id="newProfilePicture" type="file" accept="image/*">
+                <img id="newPicturePreview" alt="Profile preview" hidden>
+              </label>
+            </div>
 
-			<section class="panel qualification-panel" aria-labelledby="qualification-heading">
-				<div class="notes-heading">
-					<div><span class="section-number">05</span><h2 id="qualification-heading">Job qualification</h2></div>
-					<span>Choose Yes or No, then rate each Yes from 1 to 5</span>
-				</div>
-				<div class="qualification-list">
-					<div class="qualification-row">
-						<strong>Check-in</strong>
-						<label class="field">Can perform
-							<select data-qualification-status="check-in" aria-label="Can perform Check-in" required>
-								<option value="">Choose</option><option value="no">No</option><option value="yes">Yes</option>
-							</select>
-						</label>
-						<label class="field">Rate / 5
-							<input type="number" min="1" max="5" step="0.5" data-qualification-rate="check-in" aria-label="Check-in rate" required disabled>
-						</label>
-					</div>
-					<div class="qualification-row">
-						<strong>Gate Support</strong>
-						<label class="field">Can perform
-							<select data-qualification-status="gate-support" aria-label="Can perform Gate Support" required>
-								<option value="">Choose</option><option value="no">No</option><option value="yes">Yes</option>
-							</select>
-						</label>
-						<label class="field">Rate / 5
-							<input type="number" min="1" max="5" step="0.5" data-qualification-rate="gate-support" aria-label="Gate Support rate" required disabled>
-						</label>
-					</div>
-					<div class="qualification-row">
-						<strong>Gate Agent</strong>
-						<label class="field">Can perform
-							<select data-qualification-status="gate-agent" aria-label="Can perform Gate Agent" required>
-								<option value="">Choose</option><option value="no">No</option><option value="yes">Yes</option>
-							</select>
-						</label>
-						<label class="field">Rate / 5
-							<input type="number" min="1" max="5" step="0.5" data-qualification-rate="gate-agent" aria-label="Gate Agent rate" required disabled>
-						</label>
-					</div>
-					<div class="qualification-row">
-						<strong>Service Desk</strong>
-						<label class="field">Can perform
-							<select data-qualification-status="service-desk" aria-label="Can perform Service Desk" required>
-								<option value="">Choose</option><option value="no">No</option><option value="yes">Yes</option>
-							</select>
-						</label>
-						<label class="field">Rate / 5
-							<input type="number" min="1" max="5" step="0.5" data-qualification-rate="service-desk" aria-label="Service Desk rate" required disabled>
-						</label>
-					</div>
-					<div class="qualification-row">
-						<strong>Arrival</strong>
-						<label class="field">Can perform
-							<select data-qualification-status="arrival" aria-label="Can perform Arrival" required>
-								<option value="">Choose</option><option value="no">No</option><option value="yes">Yes</option>
-							</select>
-						</label>
-						<label class="field">Rate / 5
-							<input type="number" min="1" max="5" step="0.5" data-qualification-rate="arrival" aria-label="Arrival rate" required disabled>
-						</label>
-					</div>
-					<div class="qualification-row">
-						<strong>Ops</strong>
-						<label class="field">Can perform
-							<select data-qualification-status="ops" aria-label="Can perform Ops" required>
-								<option value="">Choose</option><option value="no">No</option><option value="yes">Yes</option>
-							</select>
-						</label>
-						<label class="field">Rate / 5
-							<input type="number" min="1" max="5" step="0.5" data-qualification-rate="ops" aria-label="Ops rate" required disabled>
-						</label>
-					</div>
-				</div>
-			</section>
+            <div class="form-actions">
+              <button class="button button-secondary" type="reset">Clear</button>
+              <button class="button button-primary" type="submit">Create employee</button>
+            </div>
+          </form>
+      </section>
+    </section>
 
-			<section class="panel notes-panel" aria-labelledby="notes-heading">
-				<div class="notes-heading"><div><span class="section-number">06</span><h2 id="notes-heading">Evaluator notes</h2></div><span>Keep it specific and actionable</span></div>
-				<textarea id="notes" rows="4" placeholder="Summarize standout contributions, context behind the scores, and the next growth focus..."></textarea>
-			</section>
+    <section class="view-panel" id="employeeDetailView" aria-live="polite">
+      <div class="employee-summary panel">
+        <div class="employee-summary-main">
+          <div class="employee-avatar" id="detailAvatar">JD</div>
+          <div>
+            <p class="eyebrow">Employee profile</p>
+            <h1 id="detailName">Employee name</h1>
+            <p class="muted-text" id="detailPosition">Position</p>
+          </div>
+        </div>
 
-			<div class="form-actions">
-				<button class="button button-secondary" id="resetButton" type="button">Reset evaluation</button>
-				<button class="button button-primary" id="saveButton" type="submit">Save evaluation <span aria-hidden="true">&#8594;</span></button>
-			</div>
-		</form>
+        <div class="employee-metrics">
+          <div class="metric-box">
+            <span>Total history</span>
+            <strong id="historyCount">0</strong>
+          </div>
+          <div class="metric-box warning-box">
+            <span>Warnings</span>
+            <strong id="warningCount">0</strong>
+          </div>
+          <div class="metric-box">
+            <span>Late arrivals</span>
+            <strong id="lateCount">0</strong>
+          </div>
+          <div class="metric-box">
+            <span>Sick days this year</span>
+            <strong id="sickDaysCount">0</strong>
+          </div>
+          <div class="metric-box evaluation-average-box">
+            <span>Average evaluation</span>
+            <strong id="evaluationAverage">-</strong>
+          </div>
+        </div>
+      </div>
 
-		<aside class="employees-panel panel" id="employeesPanel" aria-labelledby="employees-heading">
-				<div class="employees-heading">
-					<h2 id="employees-heading">Employees list</h2>
-					<div class="employees-heading-actions">
-						<span id="employeeCount">0 saved</span>
-					</div>
-				</div>
-				<p class="employees-description">Every employee created from the New employee form appears here.</p>
-				<div class="employee-list" id="employeeList" aria-live="polite">
-					<p class="empty-employees">No saved employees yet.</p>
-				</div>
-			</aside>
-		</div>
+      <div class="detail-grid">
+        <section class="panel detail-card">
+          <div class="panel-header">
+            <h2>Employee information</h2>
+          </div>
+          <div class="detail-meta" id="detailMeta"></div>
+        </section>
 
-		<section class="employee-modal" id="employeeModal" role="dialog" aria-modal="true" aria-labelledby="employeeModalTitle" hidden>
-			<div class="employee-modal-backdrop" data-close-employee-modal></div>
-			<form class="employee-modal-content" id="newEmployeeForm">
-				<div class="employee-modal-header">
-					<div>
-						<span class="eyebrow">People operations</span>
-						<h2 id="employeeModalTitle">Employee details</h2>
-					</div>
-					<button class="drawer-close" type="button" aria-label="Close new employee form" data-close-employee-modal>&times;</button>
-				</div>
-				<div class="new-employee-fields">
-					<label class="field">Employee first name<input id="newFirstName" type="text" required></label>
-					<label class="field">Employee last name<input id="newLastName" type="text" required></label>
-					<label class="field">Employee ID<input id="newEmployeeId" type="text" required></label>
-					<label class="field">Work email<input id="newWorkEmail" type="email" required></label>
-					<label class="field">Work phone number<input id="newWorkPhone" type="tel" required></label>
-					<label class="field">Position title<input id="newPositionTitle" type="text" required></label>
-					<label class="field">Date of commencement of work<input id="newCommencementDate" type="date" required></label>
-					<label class="field photo-field">Profile picture<input id="newProfilePicture" type="file" accept="image/*"><img id="newPicturePreview" alt="Profile preview" hidden></label>
-				</div>
-				<div class="employee-modal-actions">
-					<button class="button button-secondary" type="button" data-close-employee-modal>Cancel</button>
-					<button class="button button-primary" type="submit">Create new employee</button>
-				</div>
-			</form>
-		</section>
+        <section class="panel detail-card history-card">
+          <div class="panel-header history-header">
+            <h2>Employee history</h2>
+            <button class="button button-primary" id="addHistoryButton" type="button">Add record</button>
+          </div>
+          <div class="history-list" id="historyList"></div>
+        </section>
+      </div>
+    </section>
+  </main>
 
-		<section class="profile-drawer" id="profileDrawer" role="dialog" aria-modal="true" aria-labelledby="profileDrawerTitle" hidden>
-			<div class="profile-drawer-backdrop" data-close-profile></div>
-			<div class="profile-drawer-content">
-				<div class="profile-drawer-header">
-					<div>
-						<span class="eyebrow">Saved employee profile</span>
-						<h2 id="profileDrawerTitle">Employee details</h2>
-					</div>
-					<button class="drawer-close" type="button" aria-label="Close employee profile" data-close-profile>&times;</button>
-				</div>
-				<div class="profile-score-highlight">
-					<span>Evaluation score</span>
-					<strong id="profileDrawerScore">0.0 <small>/ 5</small></strong>
-				</div>
-				<div class="profile-details" id="profileDrawerDetails"></div>
-				<div class="profile-drawer-actions">
-					<button class="button button-secondary" type="button" data-close-profile>Close</button>
-					<button class="button button-primary" type="button" id="loadProfileButton">Load into evaluation</button>
-				</div>
-			</div>
-		</section>
-		<footer>Employee Evaluation Dashboard <span>&middot;</span> Internal review workspace</footer>
-	</main>
-	<script src="employee-evaluation-dashboard.js"></script>
+  <div class="modal hidden" id="historyModal" role="dialog" aria-modal="true" aria-labelledby="historyModalTitle">
+    <div class="modal-backdrop" data-close-history></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Employee history</p>
+          <h2 id="historyModalTitle">Add record</h2>
+        </div>
+        <button class="drawer-close" type="button" data-close-history aria-label="Close history modal">&times;</button>
+      </div>
+
+      <form id="historyForm" class="history-form">
+        <label class="field">
+          <span>Type of record</span>
+          <select id="historyType" required>
+            <option value="Evaluation">Evaluation</option>
+            <option value="Meeting with employee">Meeting with employee</option>
+            <option value="Sickness">Sickness</option>
+            <option value="Verbal warning">Verbal warning</option>
+            <option value="Written warning">Written warning</option>
+            <option value="Mistake">Mistake</option>
+            <option value="Problems with colleagues">Problems with colleagues</option>
+            <option value="Personal problems at work">Personal problems at work</option>
+            <option value="Arrived late">Arrived late</option>
+            <option value="Left before work was finished">Left before work was finished</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Date</span>
+          <input id="historyDate" type="date" required>
+        </label>
+
+        <label class="field" id="sicknessDaysField" hidden>
+          <span>Number of sick days</span>
+          <input id="sicknessDays" type="number" min="1" step="1" placeholder="Enter number of days">
+        </label>
+
+        <div class="evaluation-fields" id="evaluationFields">
+          <div class="evaluation-heading">
+            <div>
+              <p class="eyebrow">Performance review</p>
+              <h3>Evaluation details</h3>
+            </div>
+            <span>Rate each area from 1 to 5</span>
+          </div>
+
+          <div class="evaluation-grid">
+            <label class="field">
+              <span>Quality of work</span>
+              <select id="evaluationQuality" required>
+                <option value="">Choose rating</option>
+                <option value="1">1 - Needs improvement</option>
+                <option value="2">2 - Developing</option>
+                <option value="3">3 - Meets expectations</option>
+                <option value="4">4 - Exceeds expectations</option>
+                <option value="5">5 - Outstanding</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Productivity</span>
+              <select id="evaluationProductivity" required>
+                <option value="">Choose rating</option>
+                <option value="1">1 - Needs improvement</option>
+                <option value="2">2 - Developing</option>
+                <option value="3">3 - Meets expectations</option>
+                <option value="4">4 - Exceeds expectations</option>
+                <option value="5">5 - Outstanding</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Reliability</span>
+              <select id="evaluationReliability" required>
+                <option value="">Choose rating</option>
+                <option value="1">1 - Needs improvement</option>
+                <option value="2">2 - Developing</option>
+                <option value="3">3 - Meets expectations</option>
+                <option value="4">4 - Exceeds expectations</option>
+                <option value="5">5 - Outstanding</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Teamwork</span>
+              <select id="evaluationTeamwork" required>
+                <option value="">Choose rating</option>
+                <option value="1">1 - Needs improvement</option>
+                <option value="2">2 - Developing</option>
+                <option value="3">3 - Meets expectations</option>
+                <option value="4">4 - Exceeds expectations</option>
+                <option value="5">5 - Outstanding</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Communication</span>
+              <select id="evaluationCommunication" required>
+                <option value="">Choose rating</option>
+                <option value="1">1 - Needs improvement</option>
+                <option value="2">2 - Developing</option>
+                <option value="3">3 - Meets expectations</option>
+                <option value="4">4 - Exceeds expectations</option>
+                <option value="5">5 - Outstanding</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Growth and initiative</span>
+              <select id="evaluationGrowth" required>
+                <option value="">Choose rating</option>
+                <option value="1">1 - Needs improvement</option>
+                <option value="2">2 - Developing</option>
+                <option value="3">3 - Meets expectations</option>
+                <option value="4">4 - Exceeds expectations</option>
+                <option value="5">5 - Outstanding</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Goals and follow-up</span>
+            <textarea id="evaluationGoals" rows="3" placeholder="Development goals, support, and next review actions..." required></textarea>
+          </label>
+
+          <label class="field">
+            <span>Manager comments</span>
+            <textarea id="evaluationComments" rows="4" placeholder="Summarize the employee's performance and progress..." required></textarea>
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Short summary</span>
+          <input id="historySummary" type="text" maxlength="120" placeholder="Brief summary" required>
+        </label>
+
+        <label class="field">
+          <span>Details</span>
+          <textarea id="historyDetails" rows="5" placeholder="Add details and follow-up actions..." required></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button class="button button-secondary" type="button" data-close-history>Cancel</button>
+          <button class="button button-primary" type="submit">Save record</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="recordDetailsModal" role="dialog" aria-modal="true" aria-labelledby="recordDetailsTitle">
+    <div class="modal-backdrop" data-close-record-details></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Employee history</p>
+          <h2 id="recordDetailsTitle">Record details</h2>
+        </div>
+        <button class="drawer-close" type="button" data-close-record-details aria-label="Close record details">&times;</button>
+      </div>
+      <div class="record-details-content">
+        <div class="record-details-meta" id="recordDetailsMeta"></div>
+        <div>
+          <p class="eyebrow">Details</p>
+          <p class="record-details-body" id="recordDetailsBody"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="employee-evaluation-dashboard.js"></script>
 </body>
 </html>

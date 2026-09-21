@@ -124,12 +124,23 @@
 
     <section class="view-panel" id="employeeDetailView" aria-live="polite">
       <div class="employee-summary panel">
-        <div class="employee-summary-main">
-          <div class="employee-avatar" id="detailAvatar">JD</div>
-          <div>
-            <p class="eyebrow">Employee profile</p>
-            <h1 id="detailName">Employee name</h1>
-            <p class="muted-text" id="detailPosition">Position</p>
+        <div class="employee-summary-header">
+          <div class="employee-summary-main">
+            <div class="employee-avatar" id="detailAvatar">JD</div>
+            <div>
+              <p class="eyebrow">Employee profile</p>
+              <div class="employee-name-row">
+                <h1 id="detailName">Employee name</h1>
+                <span class="training-badge hidden" id="trainingBadge">OP</span>
+              </div>
+              <p class="muted-text" id="detailPosition">Position</p>
+            </div>
+          </div>
+
+          <div class="employee-performance" aria-live="polite">
+            <span class="performance-label">Performance evaluation</span>
+            <div class="performance-stars" id="performanceStars" aria-label="Performance rating">☆☆☆☆☆</div>
+            <strong class="performance-score" id="performanceScore">-</strong>
           </div>
         </div>
 
@@ -149,10 +160,6 @@
           <div class="metric-box">
             <span>Sick days this year</span>
             <strong id="sickDaysCount">0</strong>
-          </div>
-          <div class="metric-box evaluation-average-box">
-            <span>Average evaluation</span>
-            <strong id="evaluationAverage">-</strong>
           </div>
         </div>
       </div>
@@ -201,6 +208,7 @@
             <option value="Personal problems at work">Personal problems at work</option>
             <option value="Arrived late">Arrived late</option>
             <option value="Left before work was finished">Left before work was finished</option>
+            <option value="Training">Training</option>
           </select>
         </label>
 
@@ -213,6 +221,35 @@
           <span>Number of sick days</span>
           <input id="sicknessDays" type="number" min="1" step="1" placeholder="Enter number of days">
         </label>
+
+        <div class="training-fields" id="trainingFields" hidden>
+          <label class="field">
+            <span>Type of department</span>
+            <select id="trainingDepartment">
+              <option value="">Choose department</option>
+              <option value="Operation">Operation - OP</option>
+              <option value="Checkin">Checkin - CI</option>
+              <option value="Boarding support">Boarding support - BS</option>
+              <option value="Boarding Agent">Boarding Agent - BA</option>
+              <option value="Arrival">Arrival - AR</option>
+              <option value="Team Leader">Team Leader - TL</option>
+              <option value="Supervisor">Supervisor - SV</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Ending date</span>
+            <input id="trainingEndDate" type="date">
+          </label>
+
+          <label class="field">
+            <span>Training status</span>
+            <select id="trainingStatus">
+              <option value="successful">Successful</option>
+              <option value="not-successful">Not successful</option>
+            </select>
+          </label>
+        </div>
 
         <div class="evaluation-fields" id="evaluationFields">
           <div class="evaluation-heading">

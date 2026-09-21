@@ -474,6 +474,13 @@ textarea:focus {
   flex-wrap: wrap;
 }
 
+.training-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .training-badge {
   display: inline-flex;
   align-items: center;
@@ -787,6 +794,16 @@ textarea:focus {
   margin: 0;
   color: var(--muted);
   white-space: pre-wrap;
+}
+
+.button-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.button-danger:hover,
+.button-danger:focus-visible {
+  background: #963535;
 }
 
 .history-details {

@@ -18,7 +18,7 @@ const lateCount = document.querySelector('#lateCount');
 const sickDaysCount = document.querySelector('#sickDaysCount');
 const performanceStars = document.querySelector('#performanceStars');
 const performanceScore = document.querySelector('#performanceScore');
-const trainingBadge = document.querySelector('#trainingBadge');
+const trainingBadges = document.querySelector('#trainingBadges');
 const evaluationAverage = document.querySelector('#evaluationAverage');
 const newEmployeeForm = document.querySelector('#newEmployeeForm');
 const newProfilePicture = document.querySelector('#newProfilePicture');
@@ -30,6 +30,8 @@ const recordDetailsModal = document.querySelector('#recordDetailsModal');
 const recordDetailsTitle = document.querySelector('#recordDetailsTitle');
 const recordDetailsMeta = document.querySelector('#recordDetailsMeta');
 const recordDetailsBody = document.querySelector('#recordDetailsBody');
+const editRecordButton = document.querySelector('#editRecordButton');
+const deleteRecordButton = document.querySelector('#deleteRecordButton');
 const evaluationFields = document.querySelector('#evaluationFields');
 const historyType = document.querySelector('#historyType');
 const sicknessDaysField = document.querySelector('#sicknessDaysField');
@@ -42,6 +44,8 @@ const historySummary = document.querySelector('#historySummary');
 const historyDetails = document.querySelector('#historyDetails');
 let currentEmployeeId = null;
 let newPictureData = '';
+let selectedRecordId = null;
+let editingRecordId = null;
 
 const seedEmployees = [
   {
@@ -295,6 +299,31 @@ function getRecordPresentation(type) {
   return presentations[type] || { className: 'record-default', icon: '&#8226;' };
 }
 
+function getTrainingCode(training) {
+  if (!training || String(training.status).trim().toLowerCase() !== 'successful') return '';
+
+  const departmentCodes = {
+    operation: 'OP',
+    checkin: 'CI',
+    'boarding support': 'BS',
+    'boarding agent': 'BA',
+    arrival: 'AR',
+    'team leader': 'TL',
+    supervisor: 'SV'
+  };
+
+  return departmentCodes[String(training.department).trim().toLowerCase()] || 'TR';
+}
+
+function getEmployeeTrainings(employee, history) {
+  const trainingRecords = history.filter(record => record.type === 'Training');
+  if (!trainingRecords.length) return employee.training ? [employee.training] : [];
+
+  return trainingRecords
+    .map(record => record.training || employee.training)
+    .filter(Boolean);
+}
+
 function renderEmployeeDetail() {
   const employee = getCurrentEmployee();
   if (!employee) {
@@ -320,23 +349,16 @@ function renderEmployeeDetail() {
   const ratingValue = Number(averageEvaluation);
   const filledStars = Number.isFinite(ratingValue) ? Math.round(ratingValue) : 0;
   const stars = Array.from({ length: 5 }, (_, index) => index < filledStars ? '★' : '☆').join('');
-  const departmentMap = {
-    Operation: 'OP',
-    Checkin: 'CI',
-    'Boarding support': 'BS',
-    'Boarding Agent': 'BA',
-    Arrival: 'AR',
-    'Team Leader': 'TL',
-    Supervisor: 'SV'
-  };
   const training = employee.training || null;
-  const trainingCode = training && training.status === 'successful' ? (departmentMap[training.department] || 'TR') : '';
+  const trainingCodes = getEmployeeTrainings(employee, history)
+    .map(getTrainingCode)
+    .filter(Boolean);
 
   detailAvatar.textContent = getInitials(employee.firstName, employee.lastName);
   detailName.textContent = `${employee.firstName} ${employee.lastName}`;
   detailPosition.textContent = employee.position || 'Position not provided';
-  trainingBadge.textContent = trainingCode;
-  trainingBadge.classList.toggle('hidden', !trainingCode);
+  trainingBadges.innerHTML = trainingCodes.map(code => `<span class="training-badge">${code}</span>`).join('');
+  trainingBadges.classList.toggle('hidden', !trainingCodes.length);
   performanceStars.textContent = Number.isFinite(ratingValue) ? stars : '☆☆☆☆☆';
   performanceScore.textContent = Number.isFinite(ratingValue) ? `${averageEvaluation}/5` : 'No evaluation';
   historyCount.textContent = String(history.length);
@@ -348,7 +370,7 @@ function renderEmployeeDetail() {
     <div class="meta-item"><span>Training department</span><strong>${training.department || 'Not provided'}</strong></div>
     <div class="meta-item"><span>Training start</span><strong>${training.startDate || 'Not provided'}</strong></div>
     <div class="meta-item"><span>Training end</span><strong>${training.endDate || 'Not provided'}</strong></div>
-    <div class="meta-item"><span>Training status</span><strong>${training.status === 'successful' ? 'Successful' : 'Not successful'}</strong></div>
+    <div class="meta-item"><span>Training status</span><strong>${String(training.status).trim().toLowerCase() === 'successful' ? 'Successful' : 'Not successful'}</strong></div>
   ` : `
     <div class="meta-item"><span>Training</span><strong>No training added yet</strong></div>
   `;
@@ -388,6 +410,7 @@ function renderEmployeeDetail() {
 
 function closeRecordDetails() {
   recordDetailsModal.classList.add('hidden');
+  selectedRecordId = null;
 }
 
 function openRecordDetails(recordId) {
@@ -395,6 +418,7 @@ function openRecordDetails(recordId) {
   const record = employee?.history?.find(item => item.id === recordId);
   if (!record) return;
 
+  selectedRecordId = recordId;
   recordDetailsModal.classList.remove('hidden');
   recordDetailsTitle.textContent = record.type;
   recordDetailsMeta.innerHTML = `
@@ -433,18 +457,44 @@ function updateHistoryTypeFields() {
 function closeHistoryModal() {
   historyModal.classList.add('hidden');
   historyForm.reset();
+  editingRecordId = null;
   const today = new Date().toISOString().split('T')[0];
   document.querySelector('#historyDate').value = today;
   trainingEndDate.value = today;
   updateHistoryTypeFields();
 }
 
-function openHistoryModal() {
+function openHistoryModal(record = null) {
   if (!currentEmployeeId) return;
+  const savedTraining = record?.training || (record?.type === 'Training' ? getCurrentEmployee()?.training : null);
+  editingRecordId = record?.id || null;
   historyModal.classList.remove('hidden');
   const today = new Date().toISOString().split('T')[0];
-  document.querySelector('#historyDate').value = today;
-  trainingEndDate.value = today;
+  historyForm.reset();
+  document.querySelector('#historyDate').value = record?.date || today;
+  trainingEndDate.value = record?.training?.endDate || record?.date || today;
+  historyType.value = record?.type || 'Evaluation';
+  sicknessDays.value = record?.sickDays || '';
+  historySummary.value = record?.summary || '';
+  historyDetails.value = record?.details || '';
+
+  if (record?.evaluation) {
+    Object.entries(record.evaluation.scores || {}).forEach(([key, value]) => {
+      const field = document.querySelector(`#evaluation${key.charAt(0).toUpperCase()}${key.slice(1)}`);
+      if (field) field.value = value;
+    });
+    document.querySelector('#evaluationGoals').value = record.evaluation.goals || '';
+    document.querySelector('#evaluationComments').value = record.evaluation.comments || '';
+  }
+
+  if (savedTraining) {
+    trainingDepartment.value = savedTraining.department || '';
+    trainingEndDate.value = savedTraining.endDate || record.date || today;
+    trainingStatus.value = savedTraining.status || 'successful';
+  }
+
+  document.querySelector('#historyModalTitle').textContent = record ? 'Edit record' : 'Add record';
+  historyForm.querySelector('button[type="submit"]').textContent = record ? 'Save changes' : 'Save record';
   updateHistoryTypeFields();
   document.querySelector('#historyType').focus();
 }
@@ -515,7 +565,33 @@ navButtons.forEach(button => {
   });
 });
 
-addHistoryButton.addEventListener('click', openHistoryModal);
+addHistoryButton.addEventListener('click', () => openHistoryModal());
+
+editRecordButton.addEventListener('click', () => {
+  const employee = getCurrentEmployee();
+  const record = employee?.history?.find(item => item.id === selectedRecordId);
+  if (!record) return;
+
+  closeRecordDetails();
+  openHistoryModal(record);
+});
+
+deleteRecordButton.addEventListener('click', () => {
+  const employee = getCurrentEmployee();
+  const record = employee?.history?.find(item => item.id === selectedRecordId);
+  if (!record || !confirm(`Delete the ${record.type} record dated ${record.date}?`)) return;
+
+  const employees = readEmployees();
+  const index = employees.findIndex(item => item.id === employee.id);
+  if (index < 0) return;
+
+  employees[index].history = (employees[index].history || []).filter(item => item.id !== record.id);
+  writeEmployees(employees);
+  closeRecordDetails();
+  renderEmployeeList();
+  renderEmployeeDetail();
+  saveState.textContent = `${record.type} deleted`;
+});
 
 historyList.addEventListener('click', event => {
   const recordItem = event.target.closest('[data-record-id]');
@@ -544,6 +620,7 @@ historyForm.addEventListener('submit', event => {
   event.preventDefault();
   const employee = getCurrentEmployee();
   if (!employee) return;
+  const recordIdToUpdate = editingRecordId;
 
   const isEvaluation = historyType.value === 'Evaluation';
   const isTraining = historyType.value === 'Training';
@@ -593,6 +670,7 @@ historyForm.addEventListener('submit', event => {
         ? `Training department: ${training.department}\nStart date: ${training.startDate}\nEnd date: ${training.endDate}\nStatus: ${training.status === 'successful' ? 'Successful' : 'Not successful'}`
         : historyDetails.value.trim(),
     evaluation,
+      training,
     sickDays
   };
 
@@ -601,11 +679,14 @@ historyForm.addEventListener('submit', event => {
 
   if (index >= 0) {
     if (training) employees[index].training = training;
-    employees[index].history = [record, ...(employees[index].history || [])];
+    const history = employees[index].history || [];
+    employees[index].history = recordIdToUpdate
+      ? history.map(item => item.id === recordIdToUpdate ? { ...record, id: recordIdToUpdate } : item)
+      : [record, ...history];
     writeEmployees(employees);
     renderEmployeeList();
     renderEmployeeDetail();
-    saveState.textContent = `${record.type} saved`;
+    saveState.textContent = `${record.type} ${recordIdToUpdate ? 'updated' : 'saved'}`;
   }
 
   closeHistoryModal();

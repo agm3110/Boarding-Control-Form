@@ -131,7 +131,7 @@
               <p class="eyebrow">Employee profile</p>
               <div class="employee-name-row">
                 <h1 id="detailName">Employee name</h1>
-                <span class="training-badge hidden" id="trainingBadge">OP</span>
+                <div class="training-badges hidden" id="trainingBadges" aria-label="Successful training departments"></div>
               </div>
               <p class="muted-text" id="detailPosition">Position</p>
             </div>
@@ -373,6 +373,10 @@
         <div>
           <p class="eyebrow">Details</p>
           <p class="record-details-body" id="recordDetailsBody"></p>
+        </div>
+        <div class="modal-actions">
+          <button class="button button-secondary" id="editRecordButton" type="button">Edit record</button>
+          <button class="button button-danger" id="deleteRecordButton" type="button">Delete record</button>
         </div>
       </div>
     </div>

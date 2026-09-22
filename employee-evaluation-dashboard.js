@@ -26,6 +26,7 @@ const newPicturePreview = document.querySelector('#newPicturePreview');
 const historyModal = document.querySelector('#historyModal');
 const historyForm = document.querySelector('#historyForm');
 const addHistoryButton = document.querySelector('#addHistoryButton');
+const editEmployeeButton = document.querySelector('#editEmployeeButton');
 const recordDetailsModal = document.querySelector('#recordDetailsModal');
 const recordDetailsTitle = document.querySelector('#recordDetailsTitle');
 const recordDetailsMeta = document.querySelector('#recordDetailsMeta');
@@ -46,6 +47,7 @@ let currentEmployeeId = null;
 let newPictureData = '';
 let selectedRecordId = null;
 let editingRecordId = null;
+let editingEmployeeId = null;
 
 const seedEmployees = [
   {
@@ -390,19 +392,22 @@ function renderEmployeeDetail() {
     return;
   }
 
-  historyList.innerHTML = history.map(record => {
+  const chronologicalHistory = [...history].sort((firstRecord, secondRecord) => secondRecord.date.localeCompare(firstRecord.date));
+  historyList.innerHTML = chronologicalHistory.map(record => {
     const presentation = getRecordPresentation(record.type);
     const warningClass = /warning/i.test(record.type) ? 'warning' : '';
     return `
-      <article class="history-item ${presentation.className} ${warningClass}" role="button" tabindex="0" data-record-id="${record.id}">
-        <div class="history-item-header">
-          <div class="history-type-group">
-            <span class="record-icon" aria-hidden="true">${presentation.icon}</span>
+      <article class="timeline-entry ${presentation.className} ${warningClass}" role="button" tabindex="0" data-record-id="${record.id}">
+        <time class="timeline-date" datetime="${record.date}">${record.date}</time>
+        <div class="timeline-rail" aria-hidden="true">
+          <span class="record-icon">${presentation.icon}</span>
+        </div>
+        <div class="history-item">
+          <div class="history-item-header">
             <span class="history-type">${record.type}</span>
           </div>
-          <span class="history-date">${record.date}</span>
+          <p class="history-summary">${record.summary || 'No summary provided'}</p>
         </div>
-        <p class="history-summary">${record.summary}</p>
       </article>
     `;
   }).join('');
@@ -434,6 +439,27 @@ function openEmployeeDetail(employeeId) {
   setView('profile');
   renderEmployeeDetail();
   saveState.textContent = 'Employee profile open';
+}
+
+function openEmployeeEditForm() {
+  const employee = getCurrentEmployee();
+  if (!employee) return;
+
+  editingEmployeeId = employee.id;
+  newEmployeeForm.reset();
+  document.querySelector('#newFirstName').value = employee.firstName || '';
+  document.querySelector('#newLastName').value = employee.lastName || '';
+  document.querySelector('#newEmployeeId').value = employee.employeeId || '';
+  document.querySelector('#newPositionTitle').value = employee.position || '';
+  document.querySelector('#newWorkEmail').value = employee.email || '';
+  document.querySelector('#newWorkPhone').value = employee.phone || '';
+  document.querySelector('#newCommencementDate').value = employee.startDate || '';
+  newPictureData = employee.photo || '';
+  newPicturePreview.hidden = !newPictureData;
+  newPicturePreview.src = newPictureData;
+  document.querySelector('#employeeCreateView h1').textContent = 'Edit employee';
+  newEmployeeForm.querySelector('button[type="submit"]').textContent = 'Save changes';
+  setView('create');
 }
 
 function updateHistoryTypeFields() {
@@ -511,7 +537,7 @@ newEmployeeForm.addEventListener('submit', event => {
   const startDate = document.querySelector('#newCommencementDate').value;
 
   const employee = {
-    id: employeeId || `emp-${Date.now()}`,
+    id: editingEmployeeId || employeeId || `emp-${Date.now()}`,
     firstName,
     lastName,
     employeeId,
@@ -519,9 +545,7 @@ newEmployeeForm.addEventListener('submit', event => {
     email,
     phone,
     startDate,
-    photo: newPictureData || '',
-    history: [],
-    training: null
+    photo: newPictureData || ''
   };
 
   const employees = readEmployees();
@@ -530,7 +554,7 @@ newEmployeeForm.addEventListener('submit', event => {
   if (existingIndex >= 0) {
     employees[existingIndex] = { ...employees[existingIndex], ...employee };
   } else {
-    employees.unshift(employee);
+    employees.unshift({ ...employee, history: [], training: null });
   }
 
   writeEmployees(employees);
@@ -538,8 +562,13 @@ newEmployeeForm.addEventListener('submit', event => {
   newEmployeeForm.reset();
   newPictureData = '';
   newPicturePreview.hidden = true;
-  saveState.textContent = `${firstName} ${lastName} created`;
-  openEmployeeDetail(employee.id);
+  const savedEmployeeId = employee.id;
+  const wasEditing = Boolean(editingEmployeeId);
+  editingEmployeeId = null;
+  document.querySelector('#employeeCreateView h1').textContent = 'Create employee';
+  newEmployeeForm.querySelector('button[type="submit"]').textContent = 'Create employee';
+  saveState.textContent = `${firstName} ${lastName} ${wasEditing ? 'updated' : 'created'}`;
+  openEmployeeDetail(savedEmployeeId);
 });
 
 newProfilePicture.addEventListener('change', () => {
@@ -559,6 +588,14 @@ navButtons.forEach(button => {
   button.addEventListener('click', () => {
     const viewName = button.dataset.view;
     currentEmployeeId = null;
+    if (viewName === 'create') {
+      editingEmployeeId = null;
+      newEmployeeForm.reset();
+      newPictureData = '';
+      newPicturePreview.hidden = true;
+      document.querySelector('#employeeCreateView h1').textContent = 'Create employee';
+      newEmployeeForm.querySelector('button[type="submit"]').textContent = 'Create employee';
+    }
     setView(viewName);
     if (viewName === 'list') renderEmployeeList();
     saveState.textContent = viewName === 'home' ? 'Ready' : `${button.textContent} open`;
@@ -566,6 +603,7 @@ navButtons.forEach(button => {
 });
 
 addHistoryButton.addEventListener('click', () => openHistoryModal());
+editEmployeeButton.addEventListener('click', openEmployeeEditForm);
 
 editRecordButton.addEventListener('click', () => {
   const employee = getCurrentEmployee();

@@ -173,6 +173,57 @@
           <div class="detail-meta" id="detailMeta"></div>
         </section>
 
+        <section class="panel detail-card development-card">
+          <div class="panel-header development-header">
+            <div>
+              <p class="eyebrow">Employee development</p>
+              <h2>Development plan</h2>
+              <p class="development-subtitle" id="developmentIdentity"></p>
+            </div>
+            <button class="button button-primary" id="addManagerCommentButton" type="button">Add comment</button>
+          </div>
+
+          <div class="development-stats" id="developmentStats"></div>
+
+          <div class="development-columns">
+            <section class="development-section">
+              <div class="section-label-row">
+                <h3>Competency gap analysis</h3>
+                <span class="section-caption">Required vs current level</span>
+              </div>
+              <div class="competency-table" id="competencyTable"></div>
+            </section>
+
+            <section class="development-section">
+              <div class="section-label-row">
+                <h3>Recommended development</h3>
+                <span class="section-caption">Based on priority gaps</span>
+              </div>
+              <div class="recommendation-list" id="recommendationList"></div>
+            </section>
+          </div>
+
+          <section class="idp-section">
+            <div class="section-label-row">
+              <div>
+                <p class="eyebrow">Individual development plan</p>
+                <h3 id="developmentGoalTitle"></h3>
+              </div>
+              <span class="development-status" id="developmentStatus"></span>
+            </div>
+            <div class="progress-track" aria-label="Development plan progress"><span id="developmentProgressBar"></span></div>
+            <div class="objective-list" id="objectiveList"></div>
+          </section>
+
+          <section class="development-section manager-notes-section">
+            <div class="section-label-row">
+              <h3>Manager comments</h3>
+              <span class="section-caption" id="lastReviewDate"></span>
+            </div>
+            <div class="manager-notes" id="managerNotes"></div>
+          </section>
+        </section>
+
         <section class="panel detail-card history-card">
           <div class="panel-header history-header">
             <h2>Employee history</h2>
@@ -235,6 +286,45 @@
               <option value="Arrival">Arrival - AR</option>
               <option value="Team Leader">Team Leader - TL</option>
               <option value="Supervisor">Supervisor - SV</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Development activity</span>
+            <select id="trainingActivity">
+              <option value="">Choose activity</option>
+              <option value="Complete online procedure course">Complete online procedure course</option>
+              <option value="Attend practical training">Attend practical training</option>
+              <option value="Shadow experienced colleague">Shadow experienced colleague</option>
+              <option value="Complete knowledge test">Complete knowledge test</option>
+              <option value="Manager observation">Manager observation</option>
+              <option value="Procedure refresher course">Procedure refresher course</option>
+              <option value="Communication workshop">Communication workshop</option>
+              <option value="Leadership fundamentals">Leadership fundamentals</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Competency supported</span>
+            <select id="trainingCompetency">
+              <option value="">Choose competency</option>
+              <option value="Procedures">Procedures</option>
+              <option value="Technical knowledge">Technical knowledge</option>
+              <option value="Communication">Communication</option>
+              <option value="Teamwork">Teamwork</option>
+              <option value="Leadership">Leadership</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Follow-up assessment level</span>
+            <select id="trainingAssessmentLevel">
+              <option value="">Not assessed yet</option>
+              <option value="1">1 - Needs improvement</option>
+              <option value="2">2 - Developing</option>
+              <option value="3">3 - Meets expectations</option>
+              <option value="4">4 - Exceeds expectations</option>
+              <option value="5">5 - Outstanding</option>
             </select>
           </label>
 
@@ -380,6 +470,29 @@
           <button class="button button-danger" id="deleteRecordButton" type="button">Delete record</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="managerCommentModal" role="dialog" aria-modal="true" aria-labelledby="managerCommentModalTitle">
+    <div class="modal-backdrop" data-close-manager-comment></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <p class="eyebrow">Employee development</p>
+          <h2 id="managerCommentModalTitle">Add manager comment</h2>
+        </div>
+        <button class="drawer-close" type="button" data-close-manager-comment aria-label="Close manager comment modal">&times;</button>
+      </div>
+      <form id="managerCommentForm" class="history-form">
+        <label class="field">
+          <span>Comment</span>
+          <textarea id="managerCommentText" rows="5" placeholder="Record an observation, outcome, or next step..." required></textarea>
+        </label>
+        <div class="modal-actions">
+          <button class="button button-secondary" type="button" data-close-manager-comment>Cancel</button>
+          <button class="button button-primary" type="submit">Save comment</button>
+        </div>
+      </form>
     </div>
   </div>
 

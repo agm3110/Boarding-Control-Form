@@ -39,10 +39,27 @@ const sicknessDaysField = document.querySelector('#sicknessDaysField');
 const sicknessDays = document.querySelector('#sicknessDays');
 const trainingFields = document.querySelector('#trainingFields');
 const trainingDepartment = document.querySelector('#trainingDepartment');
+const trainingActivity = document.querySelector('#trainingActivity');
+const trainingCompetency = document.querySelector('#trainingCompetency');
+const trainingAssessmentLevel = document.querySelector('#trainingAssessmentLevel');
 const trainingEndDate = document.querySelector('#trainingEndDate');
 const trainingStatus = document.querySelector('#trainingStatus');
 const historySummary = document.querySelector('#historySummary');
 const historyDetails = document.querySelector('#historyDetails');
+const developmentIdentity = document.querySelector('#developmentIdentity');
+const developmentStats = document.querySelector('#developmentStats');
+const competencyTable = document.querySelector('#competencyTable');
+const recommendationList = document.querySelector('#recommendationList');
+const developmentGoalTitle = document.querySelector('#developmentGoalTitle');
+const developmentStatus = document.querySelector('#developmentStatus');
+const developmentProgressBar = document.querySelector('#developmentProgressBar');
+const objectiveList = document.querySelector('#objectiveList');
+const lastReviewDate = document.querySelector('#lastReviewDate');
+const managerNotes = document.querySelector('#managerNotes');
+const addManagerCommentButton = document.querySelector('#addManagerCommentButton');
+const managerCommentModal = document.querySelector('#managerCommentModal');
+const managerCommentForm = document.querySelector('#managerCommentForm');
+const managerCommentText = document.querySelector('#managerCommentText');
 let currentEmployeeId = null;
 let newPictureData = '';
 let selectedRecordId = null;
@@ -326,6 +343,129 @@ function getEmployeeTrainings(employee, history) {
     .filter(Boolean);
 }
 
+function getDefaultDevelopment() {
+  return {
+    lastReviewDate: '2026-09-22',
+    competencies: [
+      { name: 'Technical knowledge', required: 5, current: 3 },
+      { name: 'Communication', required: 4, current: 4 },
+      { name: 'Procedures', required: 5, current: 2 },
+      { name: 'Teamwork', required: 4, current: 3 },
+      { name: 'Leadership', required: 4, current: 2 }
+    ],
+    goal: 'Improve operational procedure knowledge',
+    targetLevel: 5,
+    successCriteria: '90%+ assessment score and satisfactory practical observation.',
+    objectives: [
+      { title: 'Complete online procedure course', progress: 100, deadline: '2026-10-15' },
+      { title: 'Attend practical training', progress: 60, deadline: '2026-10-30' },
+      { title: 'Shadow experienced colleague', progress: 0, deadline: '2026-11-08' },
+      { title: 'Complete knowledge test', progress: 0, deadline: '2026-11-15' },
+      { title: 'Manager observation', progress: 0, deadline: '2026-11-30' }
+    ],
+    comments: []
+  };
+}
+
+function getObjectiveStatus(objective) {
+  if (objective.progress >= 100) return { label: 'Completed', className: 'status-completed' };
+  const today = new Date().toISOString().slice(0, 10);
+  if (objective.deadline < today) return { label: 'Overdue', className: 'status-overdue' };
+  const daysRemaining = (new Date(`${objective.deadline}T00:00:00`) - new Date(`${today}T00:00:00`)) / 86400000;
+  if (daysRemaining <= 14) return { label: 'Due soon', className: 'status-due-soon' };
+  if (objective.progress === 0) return { label: 'Needs attention', className: 'status-attention' };
+  return { label: 'On track', className: 'status-on-track' };
+}
+
+function getRecommendations(competencies) {
+  const activities = {
+    Procedures: ['Procedure refresher course', 'Practical assessment', 'Supervisor coaching'],
+    'Technical knowledge': ['E-learning module', 'Job shadowing', 'Knowledge check'],
+    Communication: ['Communication workshop', 'Peer feedback session', 'Manager coaching'],
+    Teamwork: ['Collaborative task rotation', 'Peer mentoring', 'Team feedback session'],
+    Leadership: ['Leadership fundamentals', 'Supervisor coaching', 'Stretch assignment']
+  };
+
+  return competencies
+    .map(competency => ({ ...competency, gap: Math.max(0, competency.required - competency.current) }))
+    .filter(competency => competency.gap > 0)
+    .sort((firstCompetency, secondCompetency) => secondCompetency.gap - firstCompetency.gap)
+    .slice(0, 3)
+    .map(competency => ({ competency, activities: activities[competency.name] || ['Manager coaching', 'Practical assessment'] }));
+}
+
+function getDevelopmentObjectiveForActivity(activity) {
+  const activityObjectives = {
+    'Procedure refresher course': 'Complete online procedure course',
+    'Complete online procedure course': 'Complete online procedure course',
+    'Attend practical training': 'Attend practical training',
+    'Practical assessment': 'Attend practical training',
+    'Shadow experienced colleague': 'Shadow experienced colleague',
+    'Job shadowing': 'Shadow experienced colleague',
+    'Complete knowledge test': 'Complete knowledge test',
+    'Knowledge check': 'Complete knowledge test',
+    'Manager observation': 'Manager observation',
+    'Supervisor coaching': 'Manager observation'
+  };
+
+  return activityObjectives[activity] || activity;
+}
+
+function renderDevelopment(employee, history) {
+  const development = employee.development || getDefaultDevelopment();
+  const competencies = development.competencies || [];
+  const objectives = development.objectives || [];
+  const completedObjectives = objectives.filter(objective => objective.progress >= 100).length;
+  const planProgress = objectives.length
+    ? Math.round(objectives.reduce((total, objective) => total + Number(objective.progress || 0), 0) / objectives.length)
+    : 0;
+  const overdueObjectives = objectives.filter(objective => getObjectiveStatus(objective).label === 'Overdue').length;
+  const successfulTraining = history.filter(record => record.type === 'Training' && getTrainingCode(record.training || employee.training)).length;
+  const trainingPending = objectives.filter(objective => /course|training|assessment|shadow/i.test(objective.title) && objective.progress < 100).length;
+  const department = employee.training?.department || 'General operations';
+
+  developmentIdentity.textContent = `${employee.employeeId || 'No employee ID'} · ${department} · ${employee.position || 'Position not provided'}`;
+  developmentStats.innerHTML = `
+    <div class="development-stat"><span>Plan completion</span><strong>${planProgress}%</strong><small>${completedObjectives}/${objectives.length} actions completed</small></div>
+    <div class="development-stat"><span>Open goals</span><strong>${objectives.length - completedObjectives}</strong><small>${overdueObjectives} overdue action${overdueObjectives === 1 ? '' : 's'}</small></div>
+    <div class="development-stat"><span>Training</span><strong>${successfulTraining}</strong><small>${trainingPending} ${trainingPending === 1 ? 'activity' : 'activities'} pending</small></div>
+    <div class="development-stat"><span>Last review</span><strong>${development.lastReviewDate || 'Not set'}</strong><small>Development lifecycle active</small></div>
+  `;
+
+  competencyTable.innerHTML = `
+    <div class="competency-row competency-heading"><span>Competency</span><span>Required</span><span>Current</span><span>Gap</span><span>Status</span></div>
+    ${competencies.map(competency => {
+      const gap = Math.max(0, competency.required - competency.current);
+      const status = gap >= 3 ? 'Priority' : gap > 0 ? 'Development required' : 'On track';
+      const statusClass = gap >= 3 ? 'status-overdue' : gap > 0 ? 'status-attention' : 'status-on-track';
+      return `<div class="competency-row"><strong>${competency.name}</strong><span>${competency.required}/5</span><span>${competency.current}/5</span><span>${gap}</span><span class="development-status ${statusClass}">${status}</span></div>`;
+    }).join('')}
+  `;
+
+  const recommendations = getRecommendations(competencies);
+  recommendationList.innerHTML = recommendations.length ? recommendations.map(({ competency, activities }) => `
+    <article class="recommendation-item">
+      <div><strong>${competency.name}</strong><span>Gap: ${competency.gap}</span></div>
+      <p>${activities.join(' · ')}</p>
+    </article>
+  `).join('') : '<p class="empty-state">No development activities are recommended right now.</p>';
+
+  developmentGoalTitle.textContent = development.goal || 'Development plan';
+  developmentStatus.textContent = `${planProgress}% complete`;
+  developmentStatus.className = `development-status ${planProgress >= 100 ? 'status-completed' : 'status-on-track'}`;
+  developmentProgressBar.style.width = `${planProgress}%`;
+  objectiveList.innerHTML = objectives.map(objective => {
+    const status = getObjectiveStatus(objective);
+    return `<article class="objective-row"><div><strong>${objective.title}</strong><span>Deadline ${objective.deadline}</span></div><div class="objective-progress"><span><i style="width: ${objective.progress}%"></i></span><b>${objective.progress}%</b></div><span class="development-status ${status.className}">${status.label}</span></article>`;
+  }).join('');
+
+  lastReviewDate.textContent = development.lastReviewDate ? `Last review ${development.lastReviewDate}` : 'No review date';
+  const comments = development.comments || [];
+  managerNotes.innerHTML = comments.length ? comments.map(comment => `
+    <article class="manager-note"><strong>${comment.date} · ${comment.author || 'Manager'}</strong><p>${comment.text}</p></article>
+  `).join('') : '<p class="empty-state">No manager comments yet.</p>';
+}
+
 function renderEmployeeDetail() {
   const employee = getCurrentEmployee();
   if (!employee) {
@@ -386,6 +526,8 @@ function renderEmployeeDetail() {
     <div class="meta-item"><span>Profile status</span><strong>${history.length ? 'History available' : 'No records yet'}</strong></div>
     ${trainingMeta}
   `;
+
+  renderDevelopment(employee, history);
 
   if (!history.length) {
     historyList.innerHTML = '<p class="empty-state">No employee history yet. Add the first record to begin.</p>';
@@ -471,6 +613,8 @@ function updateHistoryTypeFields() {
   trainingFields.hidden = !isTraining;
   sicknessDays.required = isSickness;
   trainingDepartment.required = isTraining;
+  trainingActivity.required = isTraining;
+  trainingCompetency.required = isTraining;
   trainingEndDate.required = isTraining;
   trainingStatus.required = isTraining;
   historySummary.required = !isEvaluation && !isTraining;
@@ -515,6 +659,9 @@ function openHistoryModal(record = null) {
 
   if (savedTraining) {
     trainingDepartment.value = savedTraining.department || '';
+    trainingActivity.value = savedTraining.activity || '';
+    trainingCompetency.value = savedTraining.competency || '';
+    trainingAssessmentLevel.value = savedTraining.assessmentLevel || '';
     trainingEndDate.value = savedTraining.endDate || record.date || today;
     trainingStatus.value = savedTraining.status || 'successful';
   }
@@ -523,6 +670,17 @@ function openHistoryModal(record = null) {
   historyForm.querySelector('button[type="submit"]').textContent = record ? 'Save changes' : 'Save record';
   updateHistoryTypeFields();
   document.querySelector('#historyType').focus();
+}
+
+function closeManagerCommentModal() {
+  managerCommentModal.classList.add('hidden');
+  managerCommentForm.reset();
+}
+
+function openManagerCommentModal() {
+  if (!currentEmployeeId) return;
+  managerCommentModal.classList.remove('hidden');
+  managerCommentText.focus();
 }
 
 newEmployeeForm.addEventListener('submit', event => {
@@ -604,6 +762,7 @@ navButtons.forEach(button => {
 
 addHistoryButton.addEventListener('click', () => openHistoryModal());
 editEmployeeButton.addEventListener('click', openEmployeeEditForm);
+addManagerCommentButton.addEventListener('click', openManagerCommentModal);
 
 editRecordButton.addEventListener('click', () => {
   const employee = getCurrentEmployee();
@@ -654,6 +813,34 @@ document.querySelectorAll('[data-close-record-details]').forEach(button => {
   button.addEventListener('click', closeRecordDetails);
 });
 
+document.querySelectorAll('[data-close-manager-comment]').forEach(button => {
+  button.addEventListener('click', closeManagerCommentModal);
+});
+
+managerCommentForm.addEventListener('submit', event => {
+  event.preventDefault();
+  const employee = getCurrentEmployee();
+  if (!employee) return;
+
+  const employees = readEmployees();
+  const index = employees.findIndex(item => item.id === employee.id);
+  if (index < 0) return;
+
+  const development = employees[index].development || getDefaultDevelopment();
+  development.comments = [{
+    id: `comment-${Date.now()}`,
+    date: new Date().toISOString().slice(0, 10),
+    author: 'Manager',
+    text: managerCommentText.value.trim()
+  }, ...(development.comments || [])];
+  development.lastReviewDate = new Date().toISOString().slice(0, 10);
+  employees[index].development = development;
+  writeEmployees(employees);
+  closeManagerCommentModal();
+  renderEmployeeDetail();
+  saveState.textContent = 'Manager comment saved';
+});
+
 historyForm.addEventListener('submit', event => {
   event.preventDefault();
   const employee = getCurrentEmployee();
@@ -688,6 +875,9 @@ historyForm.addEventListener('submit', event => {
   } : null;
   const training = isTraining ? {
     department: trainingDepartment.value,
+    activity: trainingActivity.value,
+    competency: trainingCompetency.value,
+    assessmentLevel: trainingAssessmentLevel.value,
     startDate: trainingStartDate,
     endDate: trainingEndDateValue,
     status: trainingStatus.value
@@ -700,12 +890,12 @@ historyForm.addEventListener('submit', event => {
     summary: isEvaluation
       ? `Performance evaluation - overall rating ${overallScore}/5`
       : isTraining
-        ? `${training.department} training - ${training.status === 'successful' ? 'successful' : 'not successful'}`
+        ? `${training.activity} - ${training.status === 'successful' ? 'successful' : 'not successful'}`
         : historySummary.value.trim(),
     details: isEvaluation
       ? `${evaluation.comments}\n\nGoals and follow-up:\n${evaluation.goals}`
       : isTraining
-        ? `Training department: ${training.department}\nStart date: ${training.startDate}\nEnd date: ${training.endDate}\nStatus: ${training.status === 'successful' ? 'Successful' : 'Not successful'}`
+        ? `Training department: ${training.department}\nDevelopment activity: ${training.activity}\nCompetency: ${training.competency}\nFollow-up assessment: ${training.assessmentLevel ? `${training.assessmentLevel}/5` : 'Not assessed'}\nStart date: ${training.startDate}\nEnd date: ${training.endDate}\nStatus: ${training.status === 'successful' ? 'Successful' : 'Not successful'}`
         : historyDetails.value.trim(),
     evaluation,
       training,
@@ -717,6 +907,22 @@ historyForm.addEventListener('submit', event => {
 
   if (index >= 0) {
     if (training) employees[index].training = training;
+    if (training?.status === 'successful') {
+      const development = employees[index].development || getDefaultDevelopment();
+      const objectiveTitle = getDevelopmentObjectiveForActivity(training.activity);
+      development.objectives = (development.objectives || []).map(objective =>
+        objective.title === objectiveTitle ? { ...objective, progress: 100 } : objective
+      );
+      if (training.assessmentLevel) {
+        development.competencies = (development.competencies || []).map(competency =>
+          competency.name === training.competency
+            ? { ...competency, current: Math.max(competency.current, Number(training.assessmentLevel)) }
+            : competency
+        );
+      }
+      development.lastReviewDate = training.endDate;
+      employees[index].development = development;
+    }
     const history = employees[index].history || [];
     employees[index].history = recordIdToUpdate
       ? history.map(item => item.id === recordIdToUpdate ? { ...record, id: recordIdToUpdate } : item)
@@ -736,6 +942,9 @@ document.addEventListener('keydown', event => {
   }
   if (event.key === 'Escape' && !recordDetailsModal.classList.contains('hidden')) {
     closeRecordDetails();
+  }
+  if (event.key === 'Escape' && !managerCommentModal.classList.contains('hidden')) {
+    closeManagerCommentModal();
   }
 });
 

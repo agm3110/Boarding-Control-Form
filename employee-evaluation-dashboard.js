@@ -4,6 +4,8 @@ const listView = document.querySelector('#employeeListView');
 const createView = document.querySelector('#employeeCreateView');
 const detailView = document.querySelector('#employeeDetailView');
 const navButtons = document.querySelectorAll('[data-view]');
+const detailTabButtons = document.querySelectorAll('[data-detail-tab]');
+const detailTabPanels = document.querySelectorAll('[data-detail-panel]');
 const employeeList = document.querySelector('#employeeList');
 const employeeCount = document.querySelector('#employeeCount');
 const saveState = document.querySelector('#saveState');
@@ -258,6 +260,15 @@ function setView(viewName) {
 
   navButtons.forEach(button => {
     button.classList.toggle('active', button.dataset.view === viewName);
+  });
+}
+
+function setDetailTab(tabName) {
+  detailTabButtons.forEach(button => {
+    button.classList.toggle('active', button.dataset.detailTab === tabName);
+  });
+  detailTabPanels.forEach(panel => {
+    panel.classList.toggle('active', panel.dataset.detailPanel === tabName);
   });
 }
 
@@ -579,6 +590,7 @@ function openRecordDetails(recordId) {
 function openEmployeeDetail(employeeId) {
   currentEmployeeId = employeeId;
   setView('profile');
+  setDetailTab('profile');
   renderEmployeeDetail();
   saveState.textContent = 'Employee profile open';
 }
@@ -758,6 +770,10 @@ navButtons.forEach(button => {
     if (viewName === 'list') renderEmployeeList();
     saveState.textContent = viewName === 'home' ? 'Ready' : `${button.textContent} open`;
   });
+});
+
+detailTabButtons.forEach(button => {
+  button.addEventListener('click', () => setDetailTab(button.dataset.detailTab));
 });
 
 addHistoryButton.addEventListener('click', () => openHistoryModal());

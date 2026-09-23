@@ -9,23 +9,11 @@
 </head>
 <body>
   <main class="app-shell">
-    <header class="topbar">
-      <div class="brand" aria-label="Employee dashboard home">
-        <span class="brand-mark">EE</span>
-        <span>
-          <strong>People Operations</strong>
-          <small>Employee workspace</small>
-        </span>
-      </div>
-      <div class="topbar-actions">
-        <span class="save-state" id="saveState" aria-live="polite">Ready</span>
-      </div>
-    </header>
-
     <nav class="main-nav" aria-label="Main navigation">
       <button class="nav-button active" type="button" data-view="home">Home</button>
       <button class="nav-button" type="button" data-view="list">Employees list</button>
       <button class="nav-button" type="button" data-view="create">Create employee</button>
+      <span class="save-state" id="saveState" aria-live="polite">Ready</span>
     </nav>
 
     <section class="view-panel active" id="homeView">
@@ -123,114 +111,125 @@
     </section>
 
     <section class="view-panel" id="employeeDetailView" aria-live="polite">
-      <div class="employee-summary panel">
-        <div class="employee-summary-header">
-          <div class="employee-summary-main">
-            <div class="employee-avatar" id="detailAvatar">JD</div>
-            <div>
-              <p class="eyebrow">Employee profile</p>
-              <div class="employee-name-row">
-                <h1 id="detailName">Employee name</h1>
-                <div class="training-badges hidden" id="trainingBadges" aria-label="Successful training departments"></div>
+      <nav class="employee-detail-nav" aria-label="Employee profile navigation">
+        <button class="employee-detail-nav-button active" type="button" data-detail-tab="profile">Employee profile</button>
+        <button class="employee-detail-nav-button" type="button" data-detail-tab="development">Employee development</button>
+        <button class="employee-detail-nav-button" type="button" data-detail-tab="history">Employee history</button>
+      </nav>
+
+      <div class="detail-tab-panel active" data-detail-panel="profile">
+        <div class="employee-summary panel">
+          <div class="employee-summary-header">
+            <div class="employee-summary-main">
+              <div class="employee-avatar" id="detailAvatar">JD</div>
+              <div>
+                <p class="eyebrow">Employee profile</p>
+                <div class="employee-name-row">
+                  <h1 id="detailName">Employee name</h1>
+                  <div class="training-badges hidden" id="trainingBadges" aria-label="Successful training departments"></div>
+                </div>
+                <p class="muted-text" id="detailPosition">Position</p>
               </div>
-              <p class="muted-text" id="detailPosition">Position</p>
+            </div>
+
+            <div class="employee-performance" aria-live="polite">
+              <span class="performance-label">Performance evaluation</span>
+              <div class="performance-stars" id="performanceStars" aria-label="Performance rating">☆☆☆☆☆</div>
+              <strong class="performance-score" id="performanceScore">-</strong>
             </div>
           </div>
 
-          <div class="employee-performance" aria-live="polite">
-            <span class="performance-label">Performance evaluation</span>
-            <div class="performance-stars" id="performanceStars" aria-label="Performance rating">☆☆☆☆☆</div>
-            <strong class="performance-score" id="performanceScore">-</strong>
+          <div class="employee-metrics">
+            <div class="metric-box">
+              <span>Total history</span>
+              <strong id="historyCount">0</strong>
+            </div>
+            <div class="metric-box warning-box">
+              <span>Warnings</span>
+              <strong id="warningCount">0</strong>
+            </div>
+            <div class="metric-box">
+              <span>Late arrivals</span>
+              <strong id="lateCount">0</strong>
+            </div>
+            <div class="metric-box">
+              <span>Sick days this year</span>
+              <strong id="sickDaysCount">0</strong>
+            </div>
           </div>
         </div>
 
-        <div class="employee-metrics">
-          <div class="metric-box">
-            <span>Total history</span>
-            <strong id="historyCount">0</strong>
-          </div>
-          <div class="metric-box warning-box">
-            <span>Warnings</span>
-            <strong id="warningCount">0</strong>
-          </div>
-          <div class="metric-box">
-            <span>Late arrivals</span>
-            <strong id="lateCount">0</strong>
-          </div>
-          <div class="metric-box">
-            <span>Sick days this year</span>
-            <strong id="sickDaysCount">0</strong>
-          </div>
+        <div class="detail-grid">
+          <section class="panel detail-card">
+            <div class="panel-header">
+              <h2>Employee information</h2>
+              <button class="button button-primary" id="editEmployeeButton" type="button">Edit employee</button>
+            </div>
+            <div class="detail-meta" id="detailMeta"></div>
+          </section>
         </div>
       </div>
 
-      <div class="detail-grid">
-        <section class="panel detail-card">
-          <div class="panel-header">
-            <h2>Employee information</h2>
-            <button class="button button-primary" id="editEmployeeButton" type="button">Edit employee</button>
-          </div>
-          <div class="detail-meta" id="detailMeta"></div>
-        </section>
-
-        <section class="panel detail-card development-card">
-          <div class="panel-header development-header">
-            <div>
-              <p class="eyebrow">Employee development</p>
-              <h2>Development plan</h2>
-              <p class="development-subtitle" id="developmentIdentity"></p>
-            </div>
-            <button class="button button-primary" id="addManagerCommentButton" type="button">Add comment</button>
-          </div>
-
-          <div class="development-stats" id="developmentStats"></div>
-
-          <div class="development-columns">
-            <section class="development-section">
-              <div class="section-label-row">
-                <h3>Competency gap analysis</h3>
-                <span class="section-caption">Required vs current level</span>
-              </div>
-              <div class="competency-table" id="competencyTable"></div>
-            </section>
-
-            <section class="development-section">
-              <div class="section-label-row">
-                <h3>Recommended development</h3>
-                <span class="section-caption">Based on priority gaps</span>
-              </div>
-              <div class="recommendation-list" id="recommendationList"></div>
-            </section>
-          </div>
-
-          <section class="idp-section">
-            <div class="section-label-row">
+      <div class="detail-tab-panel" data-detail-panel="development">
+        <div class="detail-grid">
+          <section class="panel detail-card development-card">
+            <div class="panel-header development-header">
               <div>
-                <p class="eyebrow">Individual development plan</p>
-                <h3 id="developmentGoalTitle"></h3>
+                <p class="eyebrow">Employee development</p>
+                <h2>Development plan</h2>
+                <p class="development-subtitle" id="developmentIdentity"></p>
               </div>
-              <span class="development-status" id="developmentStatus"></span>
+              <button class="button button-primary" id="addManagerCommentButton" type="button">Add comment</button>
             </div>
-            <div class="progress-track" aria-label="Development plan progress"><span id="developmentProgressBar"></span></div>
-            <div class="objective-list" id="objectiveList"></div>
-          </section>
-
-          <section class="development-section manager-notes-section">
-            <div class="section-label-row">
-              <h3>Manager comments</h3>
-              <span class="section-caption" id="lastReviewDate"></span>
+            <div class="development-stats" id="developmentStats"></div>
+            <div class="development-columns">
+              <section class="development-section">
+                <div class="section-label-row">
+                  <h3>Competency gap analysis</h3>
+                  <span class="section-caption">Required vs current level</span>
+                </div>
+                <div class="competency-table" id="competencyTable"></div>
+              </section>
+              <section class="development-section">
+                <div class="section-label-row">
+                  <h3>Recommended development</h3>
+                  <span class="section-caption">Based on priority gaps</span>
+                </div>
+                <div class="recommendation-list" id="recommendationList"></div>
+              </section>
             </div>
-            <div class="manager-notes" id="managerNotes"></div>
+            <section class="idp-section">
+              <div class="section-label-row">
+                <div>
+                  <p class="eyebrow">Individual development plan</p>
+                  <h3 id="developmentGoalTitle"></h3>
+                </div>
+                <span class="development-status" id="developmentStatus"></span>
+              </div>
+              <div class="progress-track" aria-label="Development plan progress"><span id="developmentProgressBar"></span></div>
+              <div class="objective-list" id="objectiveList"></div>
+            </section>
+            <section class="development-section manager-notes-section">
+              <div class="section-label-row">
+                <h3>Manager comments</h3>
+                <span class="section-caption" id="lastReviewDate"></span>
+              </div>
+              <div class="manager-notes" id="managerNotes"></div>
+            </section>
           </section>
-        </section>
+        </div>
+      </div>
 
-        <section class="panel detail-card history-card">
-          <div class="panel-header history-header">
+      <div class="detail-tab-panel" data-detail-panel="history">
+        <div class="detail-grid">
+          <section class="panel detail-card history-card">
+          <div class="panel-header">
             <h2>Employee history</h2>
             <button class="button button-primary" id="addHistoryButton" type="button">Add record</button>
           </div>
           <div class="history-list" id="historyList"></div>
-        </section>
+          </section>
+        </div>
       </div>
     </section>
   </main>

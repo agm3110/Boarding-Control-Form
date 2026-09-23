@@ -502,7 +502,6 @@ function renderEmployeeDetail() {
   const ratingValue = Number(averageEvaluation);
   const filledStars = Number.isFinite(ratingValue) ? Math.round(ratingValue) : 0;
   const stars = Array.from({ length: 5 }, (_, index) => index < filledStars ? '★' : '☆').join('');
-  const training = employee.training || null;
   const trainingCodes = getEmployeeTrainings(employee, history)
     .map(getTrainingCode)
     .filter(Boolean);
@@ -519,23 +518,16 @@ function renderEmployeeDetail() {
   lateCount.textContent = String(lateTotal);
   sickDaysCount.textContent = String(sickDaysTotal);
 
-  const trainingMeta = training ? `
-    <div class="meta-item"><span>Training department</span><strong>${training.department || 'Not provided'}</strong></div>
-    <div class="meta-item"><span>Training start</span><strong>${training.startDate || 'Not provided'}</strong></div>
-    <div class="meta-item"><span>Training end</span><strong>${training.endDate || 'Not provided'}</strong></div>
-    <div class="meta-item"><span>Training status</span><strong>${String(training.status).trim().toLowerCase() === 'successful' ? 'Successful' : 'Not successful'}</strong></div>
-  ` : `
-    <div class="meta-item"><span>Training</span><strong>No training added yet</strong></div>
-  `;
-
   detailMeta.innerHTML = `
+    <div class="meta-item"><span>First name</span><strong>${employee.firstName || 'Not provided'}</strong></div>
+    <div class="meta-item"><span>Last name</span><strong>${employee.lastName || 'Not provided'}</strong></div>
     <div class="meta-item"><span>Employee ID</span><strong>${employee.employeeId || 'Not provided'}</strong></div>
     <div class="meta-item"><span>Position</span><strong>${employee.position || 'Not provided'}</strong></div>
+    <div class="meta-item"><span>Type of contract</span><strong>${employee.contractType || 'Not provided'}</strong></div>
+    <div class="meta-item"><span>Level of contract</span><strong>${employee.contractLevel || 'Not provided'}</strong></div>
     <div class="meta-item"><span>Work email</span><strong>${employee.email || 'Not provided'}</strong></div>
     <div class="meta-item"><span>Work phone</span><strong>${employee.phone || 'Not provided'}</strong></div>
     <div class="meta-item"><span>Date of commencement</span><strong>${employee.startDate || 'Not provided'}</strong></div>
-    <div class="meta-item"><span>Profile status</span><strong>${history.length ? 'History available' : 'No records yet'}</strong></div>
-    ${trainingMeta}
   `;
 
   renderDevelopment(employee, history);
@@ -605,6 +597,8 @@ function openEmployeeEditForm() {
   document.querySelector('#newLastName').value = employee.lastName || '';
   document.querySelector('#newEmployeeId').value = employee.employeeId || '';
   document.querySelector('#newPositionTitle').value = employee.position || '';
+  document.querySelector('#newContractType').value = employee.contractType || '';
+  document.querySelector('#newContractLevel').value = employee.contractLevel || '';
   document.querySelector('#newWorkEmail').value = employee.email || '';
   document.querySelector('#newWorkPhone').value = employee.phone || '';
   document.querySelector('#newCommencementDate').value = employee.startDate || '';
@@ -702,6 +696,8 @@ newEmployeeForm.addEventListener('submit', event => {
   const lastName = document.querySelector('#newLastName').value.trim();
   const employeeId = document.querySelector('#newEmployeeId').value.trim();
   const position = document.querySelector('#newPositionTitle').value.trim();
+  const contractType = document.querySelector('#newContractType').value.trim();
+  const contractLevel = document.querySelector('#newContractLevel').value.trim();
   const email = document.querySelector('#newWorkEmail').value.trim();
   const phone = document.querySelector('#newWorkPhone').value.trim();
   const startDate = document.querySelector('#newCommencementDate').value;
@@ -712,6 +708,8 @@ newEmployeeForm.addEventListener('submit', event => {
     lastName,
     employeeId,
     position,
+    contractType,
+    contractLevel,
     email,
     phone,
     startDate,
